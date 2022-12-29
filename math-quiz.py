@@ -37,20 +37,8 @@ except FileNotFoundError:
 while True:
     try:
         rnds = int(input("How many questions; 25, 50, or 100? "))
-        if rnds == 25:
-            print("Your quiz will consist of 25 questions. Good luck!")
-            time.sleep(1.5)
-            break
-        elif rnds == 50:
-            print("Your quiz will consist of 50 questions. Good luck!")
-            time.sleep(1.5)
-            break
-        elif rnds == 100:
-            print("Your quiz will consist of 75 questions. Good luck!")
-            time.sleep(1.5)
-            break
-        elif rnds == 5:#This amount used for testing
-            print("Your quiz will consist of 5 questions. Good luck!")
+        if rnds == 25 or rnds == 50 or rnds == 100 or rnds == 5: #Added 5 rounds for testing
+            print(f"Your quiz will consist of {rnds} questions. Good luck!")
             time.sleep(1.5)
             break
         else:
