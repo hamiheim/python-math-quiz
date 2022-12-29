@@ -48,7 +48,7 @@ while True:
         continue
 
 while True:
-    oper = input("What kind of test would you like; addition, subtraction, or multiplication? ").lower()
+    oper = input("What kind of test would you like; addition, subtraction, division, or multiplication? ").lower()
     if oper == "addition" or oper == "+":
         print(f"Your addition quiz will consist of {rnds} questions. Good luck!")
         time.sleep(2)
@@ -168,48 +168,47 @@ while True:
         # Define end time
         end = time.time()
         break
-# Section for division; trying to get whole numbers only and still working on proper break procedures.
-#    elif oper == "division" or oper == "/":
-#        print(f"Your division quiz will consist of {rnds} questions. Good luck!")
-#        time.sleep(2)
-#         Define start time and start test
-#        start = time.time()
-#        for z in range(int(rnds)):
-#            clear_screen()
-#            num1 = random.randint(1,12)
-#            num2 = random.randint(1,12)
-#            # Ensure only whole numbers
-#            while True:
-#                ans = num1/num2
-#                if ans.is_integer():
-#                    prob = str(num1) + "/" + str(num2)
-#                    q.append(prob)
-#                    print(f"{ques}) {num1} / {num2}")
-#                    a.append(int(ans))
-#                    break
-#                while True:
-#                    try:
-#                        uans =  int(input())
-#                    except ValueError:
-#                        print("Please enter a number")
-#                        continue
-#                    else:
-#                        ua.append(uans)
-#                        break
-#                if int(ans) == int(uans):
-#                    cor = cor + 1
-#                    ques = ques + 1
-#                    score = score + 10
-#                    q.remove(prob)
-#                    a.remove(num1 / num2)
-#                    ua.remove(uans)
-#                else:
-#                    incor = incor + 1
-#                    ques = ques + 1
-#        # Define end time
-#        end = time.time()
-#        break
-    else:
+    elif oper == "division" or oper == "/":
+        print(f"Your division quiz will consist of {rnds} questions. Good luck!")
+        time.sleep(2)
+         Define start time and start test
+        start = time.time()
+        for z in range(int(rnds)):
+            clear_screen()
+            num1 = random.randint(1,12)
+            num2 = random.randint(1,12)
+            # Ensure only whole numbers
+            while True:
+                ans = num1/num2
+                if ans.is_integer():
+                    prob = str(num1) + "/" + str(num2)
+                    q.append(prob)
+                    print(f"{ques}) {num1} / {num2}")
+                    a.append(int(ans))
+                    break
+                while True:
+                    try:
+                        uans =  int(input())
+                    except ValueError:
+                        print("Please enter a number")
+                        continue
+                    else:
+                        ua.append(uans)
+                        break
+                if int(ans) == int(uans):
+                    cor = cor + 1
+                    ques = ques + 1
+                    score = score + 10
+                    q.remove(prob)
+                    a.remove(num1 / num2)
+                    ua.remove(uans)
+                else:
+                    incor = incor + 1
+                    ques = ques + 1
+        # Define end time
+        end = time.time()
+        break
+   else:
         print("Please enter an operator type")
         continue
 
