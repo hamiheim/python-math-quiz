@@ -9,7 +9,7 @@ from math import modf
 # Might use this later to clear after each question as well 
 # if a report of incorrect answers is listed at the end.
 def clear_screen():
-    os.system('clear')
+    os.system("cls" if os.name == "nt" else 'clear')
 clear_screen()
 
 # Reset counters for questions and correct/incorrect answers
@@ -37,20 +37,8 @@ except FileNotFoundError:
 while True:
     try:
         rnds = int(input("How many questions; 25, 50, or 100? "))
-        if rnds == 25:
-            print("Your quiz will consist of 25 questions. Good luck!")
-            time.sleep(1.5)
-            break
-        elif rnds == 50:
-            print("Your quiz will consist of 50 questions. Good luck!")
-            time.sleep(1.5)
-            break
-        elif rnds == 100:
-            print("Your quiz will consist of 75 questions. Good luck!")
-            time.sleep(1.5)
-            break
-        elif rnds == 5:#This amount used for testing
-            print("Your quiz will consist of 5 questions. Good luck!")
+        if rnds == 25 or rnds == 50 or rnds == 100 or rnds == 5: #Added 5 rounds for testing
+            print(f"Your quiz will consist of {rnds} questions. Good luck!")
             time.sleep(1.5)
             break
         else:
@@ -68,7 +56,7 @@ for z in range(int(rnds)):
     num2 = random.randint(0,50)
     prob = str(num1) + "+" + str(num2)
     q.append(prob)
-    print(str(ques) + ") " + str(num1) + "+" + str(num2))
+    print(f"{ques}) {num1} + {num2}")
     a.append(num1 + num2)
     ans = num1 + num2
     while True:
@@ -94,41 +82,25 @@ for z in range(int(rnds)):
 end = time.time()
 
 # Calculate score and time to complete
-# Attempt to determine if new score is
-# a new "high" score.
+# Attempt to determine if new score is a new "high" score.
+tme = round(end-start)
+atme = tme/rnds
 perc = round((cor/rnds) * 100)
-tme = round((end - start))
-atme = round ((tme/rnds))
-if rnds == 25 and atme < 5 and perc >= 80:
-    score = score + 250
-elif rnds == 25 and 5 <= atme < 10 and perc >= 80:
-    score = score + 125
-elif rnds == 25 and 10 <= atme < 15 and perc >= 80:
-    score = score + 75
-if rnds == 50 and atme < 5 and perc >= 80:
-    score = score + 500
-elif rnds == 50 and 5 <= atme < 10 and perc >= 80:
-    score = score + 250
-elif rnds == 50 and 10 <= atme < 15 and perc >= 80:
-    score = score + 125
-if rnds == 100 and atme < 5 and perc >= 80:
-    score = score + 1000
-elif rnds == 100 and 5 <= atme < 10 and perc >= 80:
-    score = score + 500
-elif rnds == 100 and 10 <= atme < 15 and perc >= 80:
-    score = score + 250
+def calc_bonus(rnds, atme, perc):
+    if perc < 80:
+        return 0
+    if atme < 5:
+        b = 10
+    elif 5 <= atme < 10:
+        b = 5
+    elif 10 <= atme < 15:
+        b = 2.5
+    return (rnds * b)
+score = score + calc_bonus(rnds, atme, perc)
 # Read old high score and store as variable
 ohscore = open(".score.txt", "r")
 hscore = ohscore.read()
 ohscore.close()
-if int(hscore) <= int(score):
-    ohscore = open(".score.txt", "w+")
-    ohscore.write(str(score))
-    ohscore.close()
-    ohscore = open(".score.txt", "r")
-    hscore = ohscore.read()
-else:
-    ohscore.close()
 
 # Format time for easy reading
 if tme <= 60:
@@ -141,8 +113,8 @@ else:
 clear_screen()
 
 # Print results
-print("You answered " + str(cor) + " correctly!")
-print("You answered " + str(incor) + " incorrectly!")
+print(f"You answered {cor} correctly!")
+print(f"You answered {incor} incorrectly!")
 if len(q) > 0: #check if any questions were incorrect
     while True:
         rep = input("\nWould you like to see what questions you got wrong? ").lower()
@@ -162,15 +134,21 @@ if len(q) > 0: #check if any questions were incorrect
         else:
             print("INVALID INPUT! Please enter yes or no ")
             continue
-if int(score) == int(hscore):
+if int(score) > int(hscore):
+    ohscore = open(".score.txt", "w+")
+    ohscore.write(str(score))
+    ohscore.close()
+    ohscore = open(".score.txt", "r")
+    hscore = ohscore.read()
+    ohscore.close()
     popup = "## NEW HIGH SCORE! ##"
     print("")
     print("#" * len(popup))
     print(popup)
     print("#" * len(popup))
     print("")
-print("Your average time per question was " + str(atme) + " seconds")
-print("Your total time was " + str(m) + " minutes " + str(s) + " seconds")
-print("Your grade is " + str(perc) + "%")
-print("Your score is: " + str(score))
-print("Your high score is: " + str(hscore))
+print(f"Your average time per question was {atme} seconds")
+print(f"Your total time was {m} minutes {s} seconds")
+print(f"Your grade is {perc}%")
+print(f"Your score is: {score}")
+print(f"Your high score is: {hscore}")
