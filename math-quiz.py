@@ -38,8 +38,7 @@ while True:
     try:
         rnds = int(input("How many questions; 25, 50, or 100? "))
         if rnds == 25 or rnds == 50 or rnds == 100 or rnds == 5: #Added 5 rounds for testing
-            print(f"Your quiz will consist of {rnds} questions. Good luck!")
-            time.sleep(1.5)
+            print()
             break
         else:
             print("INVALID INPUT! Please enter 25, 50, or 100")
@@ -48,38 +47,171 @@ while True:
         print("INVALID INPUT! Please enter 25, 50, or 100")
         continue
 
-# Define start time and start test
-start = time.time()
-for z in range(int(rnds)):
-    clear_screen()
-    num1 = random.randint(0,50)
-    num2 = random.randint(0,50)
-    prob = str(num1) + "+" + str(num2)
-    q.append(prob)
-    print(f"{ques}) {num1} + {num2}")
-    a.append(num1 + num2)
-    ans = num1 + num2
-    while True:
-        try:
-            uans =  int(input())
-        except ValueError:
-            print("Please enter a number")
-            continue
-        else:
-            ua.append(uans)
-            break
-    if int(ans) == int(uans):
-        cor = cor + 1
-        ques = ques + 1
-        score = score + 10
-        q.remove(prob)
-        a.remove(num1 + num2)
-        ua.remove(uans)
+while True:
+    oper = input("What kind of test would you like; addition, subtraction, or multiplication? ").lower()
+    if oper == "addition" or oper == "+":
+        print(f"Your addition quiz will consist of {rnds} questions. Good luck!")
+        time.sleep(2)
+        # Define start time and start test
+        start = time.time()
+        for z in range(int(rnds)):
+            clear_screen()
+            num1 = random.randint(0,50)
+            num2 = random.randint(0,50)
+            prob = str(num1) + "+" + str(num2)
+            q.append(prob)
+            print(f"{ques}) {num1} + {num2}")
+            a.append(num1 + num2)
+            ans = num1 + num2
+            while True:
+                try:
+                    uans =  int(input())
+                except ValueError:
+                    print("Please enter a number")
+                    continue
+                else:
+                    ua.append(uans)
+                    break
+            if int(ans) == int(uans):
+                cor = cor + 1
+                ques = ques + 1
+                score = score + 10
+                q.remove(prob)
+                a.remove(num1 + num2)
+                ua.remove(uans)
+            else:
+                incor = incor + 1
+                ques = ques + 1
+        # Define end time
+        end = time.time()
+        break
+    elif oper == "multiplication" or oper == "*":
+        print(f"Your multiplication quiz will consist of {rnds} questions. Good luck!")
+        time.sleep(2)
+        # Define start time and start test
+        start = time.time()
+        for z in range(int(rnds)):
+            clear_screen()
+            num1 = random.randint(0,12)
+            num2 = random.randint(0,12)
+            prob = str(num1) + "*" + str(num2)
+            q.append(prob)
+            print(f"{ques}) {num1} * {num2}")
+            a.append(num1 * num2)
+            ans = num1 * num2
+            while True:
+                try:
+                    uans =  int(input())
+                except ValueError:
+                    print("Please enter a number")
+                    continue
+                else:
+                    ua.append(uans)
+                    break
+            if int(ans) == int(uans):
+                cor = cor + 1
+                ques = ques + 1
+                score = score + 10
+                q.remove(prob)
+                a.remove(num1 * num2)
+                ua.remove(uans)
+            else:
+                incor = incor + 1
+                ques = ques + 1
+        # Define end time
+        end = time.time()
+        break
+    elif oper == "subtraction" or oper == "-":
+        print(f"Your subtraction quiz will consist of {rnds} questions. Good luck!")
+        time.sleep(2)
+        # Define start time and start test
+        start = time.time()
+        for z in range(int(rnds)):
+            clear_screen()
+            num1 = random.randint(0,50)
+            num2 = random.randint(0,50)
+            # Prevent negative differences)
+            if int(num1) < int(num2):
+                prob = str(num2) + "-" + str(num1)
+                q.append(prob)
+                print(f"{ques}) {num2} - {num1}")
+                a.append(num2 - num1)
+                ans = num2 - num1
+            else:
+                prob = str(num1) + "-" + str(num2)
+                q.append(prob)
+                print(f"{ques}) {num1} - {num2}")
+                a.append(num1 - num2)
+                ans = num1 - num2
+            while True:
+                try:
+                    uans =  int(input())
+                except ValueError:
+                    print("Please enter a number")
+                    continue
+                else:
+                    ua.append(uans)
+                    break
+            if int(ans) == int(uans):
+                cor = cor + 1
+                ques = ques + 1
+                score = score + 10
+                q.remove(prob)
+                if int(num1) < int(num2):
+                    a.remove(num2 - num1)
+                else:
+                    a.remove(num1 - num2)
+                ua.remove(uans)
+            else:
+                incor = incor + 1
+                ques = ques + 1
+        # Define end time
+        end = time.time()
+        break
+# Section for division; trying to get whole numbers only and still working on proper break procedures.
+#    elif oper == "division" or oper == "/":
+#        print(f"Your division quiz will consist of {rnds} questions. Good luck!")
+#        time.sleep(2)
+#         Define start time and start test
+#        start = time.time()
+#        for z in range(int(rnds)):
+#            clear_screen()
+#            num1 = random.randint(1,12)
+#            num2 = random.randint(1,12)
+#            # Ensure only whole numbers
+#            while True:
+#                ans = num1/num2
+#                if ans.is_integer():
+#                    prob = str(num1) + "/" + str(num2)
+#                    q.append(prob)
+#                    print(f"{ques}) {num1} / {num2}")
+#                    a.append(int(ans))
+#                    break
+#                while True:
+#                    try:
+#                        uans =  int(input())
+#                    except ValueError:
+#                        print("Please enter a number")
+#                        continue
+#                    else:
+#                        ua.append(uans)
+#                        break
+#                if int(ans) == int(uans):
+#                    cor = cor + 1
+#                    ques = ques + 1
+#                    score = score + 10
+#                    q.remove(prob)
+#                    a.remove(num1 / num2)
+#                    ua.remove(uans)
+#                else:
+#                    incor = incor + 1
+#                    ques = ques + 1
+#        # Define end time
+#        end = time.time()
+#        break
     else:
-        incor = incor + 1
-        ques = ques + 1
-# Define end time
-end = time.time()
+        print("Please enter an operator type")
+        continue
 
 # Calculate score and time to complete
 # Attempt to determine if new score is a new "high" score.
