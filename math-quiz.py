@@ -2,7 +2,7 @@
 # Import required libraries
 from random import randint
 from os import name, system
-import time
+from time import time, sleep
 from math import modf
 
 # Define function to clear console for ease of reading.
@@ -51,9 +51,9 @@ while True:
         oper = int(input("What kind of test would you like; 1) Addition, 2) Multiplication, 3) Subtraction, or 4) Division? "))
         if oper == int(1):
             print(f"Your addition quiz will consist of {rnds} questions. Good luck!")
-            time.sleep(2)
+            sleep(2)
             # Define start time and start test
-            start = time.time()
+            start = time()
             for z in range(int(rnds)):
                 clear_screen()
                 num1 = randint(0,50)
@@ -83,13 +83,13 @@ while True:
                     incor = incor + 1
                     ques = ques + 1
             # Define end time
-            end = time.time()
+            end = time()
             break
         elif oper == int(2): 
             print(f"Your multiplication quiz will consist of {rnds} questions. Good luck!")
-            time.sleep(2)
+            sleep(2)
             # Define start time and start test
-            start = time.time()
+            start = time()
             for z in range(int(rnds)):
                 clear_screen()
                 num1 = randint(0,12)
@@ -119,13 +119,13 @@ while True:
                     incor = incor + 1
                     ques = ques + 1
             # Define end time
-            end = time.time()
+            end = time()
             break
         elif oper == int(3):
             print(f"Your subtraction quiz will consist of {rnds} questions. Good luck!")
-            time.sleep(2)
+            sleep(2)
             # Define start time and start test
-            start = time.time()
+            start = time()
             for z in range(int(rnds)):
                 clear_screen()
                 num1 = randint(0,50)
@@ -166,13 +166,13 @@ while True:
                     incor = incor + 1
                     ques = ques + 1
             # Define end time
-            end = time.time()
+            end = time()
             break
         elif oper == int(4):
             print(f"Your division quiz will consist of {rnds} questions. Good luck!")
-            time.sleep(2)
+            sleep(2)
             # Define start time and start test
-            start = time.time()
+            start = time()
             # Define list of indexes to use for elementary division
             nume12 = [144, 132, 120, 108, 96, 84, 72, 60, 48, 36, 24, 12]
             nume11 = [121, 110, 99, 88, 77, 66, 55, 44, 33, 22, 11]
@@ -268,7 +268,7 @@ while True:
                     incor = incor + 1
                     ques = ques + 1
             # Define end time
-            end = time.time()
+            end = time()
             break
         else:
             print("Please enter an operator type")
