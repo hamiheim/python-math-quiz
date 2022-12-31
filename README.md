@@ -1,12 +1,24 @@
 # Python based Math Quiz
 ## Description
-Designed as an alternative to printing out worksheets or do quizzes online, I wrote this quiz to help my son improve his math skills. Currently only does addition, but will eventually support the ability to select different types of operators (addition, subtraction, etc.).
+Designed as an alternative to printing out worksheets or do quizzes online, I wrote this quiz to help my son improve his math skills. Supports the ability to select different types of operators (addition, subtraction, etc.) to include the ability for a mixed exam of all for operators.
 
 ## Features
 A quiz that generates a set number of randomly generated questions that features a score and grade based approach as well as timing the user to show improvement over time. 
 
 ### Questions
-Currently only does addition (will update in the future for other operators) and allows the user to select from a set number of questions (25, 50, or 100). Will then prompt the user to answer randomly generated questions with numbers ranging between 0 and 49. At the conclusion of the quiz, it will present the user with the number of correct vs. incorrect questions answered, as well as prompt the user if they'd like to view the questions they got wrong. 
+Allows the user to select from a set number of questions (25, 50, or 100). There is a hidden option for 5 used for testing that can be commented out. Depending on the exam type, the selected number of questions will be generated using a randomly generated set of numbers. At the conclusion of the quiz, it will present the user with the number of correct vs. incorrect questions answered, as well as prompt the user if they'd like to view the questions they got wrong.
+
+#### Addition
+Questions use randomly generated numbers ranging between 0 and 50.
+
+#### Subtraction
+Questions use randomly generated numbers ranging between 0 and 50.
+
+#### Multiplication
+Questions use randomly generated numbers ranging between 1 and 12.
+
+#### Division
+In order to prevent questions with quotients that result in floating numbers, a set of numerators and denominators have been generated in two lists for each product family from 2 through 12. The two lists align to allow for a question with a whole number for the quotient. For example, for the 12 product family, there is a numerator list `nume12` and a denominators list `denom12`. `nume12` has values of exact products of 12, starting at 12, through 144; `denom12` has values of the corresponding product of the value from the `nume12` list, starting at 1, through 12. Questions use a randomly selected index from a randomly selected list.
 
 ### Timing
 At the conclusion of the test will show the user the total time spent on the test, as well as the average time spent per question. Currently does not specifically record the time spent per questions, but simply average the total time by the number of questions answered.
@@ -35,4 +47,4 @@ For example, if doing a 25 question quiz, the max score the user could receive i
 
 
 ## Installation
-Installation is as simple as placing the python file onto a (linux) machine with python3 installed and running from a console/terminal.
+Installation is as simple as placing the python file onto a machine with python3 installed and running from a console/terminal. A future version of this quiz is intended to develop an actual program with a GUI interface for the user to interact with.
