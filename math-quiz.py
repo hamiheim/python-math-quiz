@@ -34,9 +34,6 @@ except FileNotFoundError:
 # Define addition function
 def addition():
     global ques
-    # Define start time and start test
-    global start 
-    start = time()
     clear_screen()
     num1 = randint(0,50)
     num2 = randint(0,50)
@@ -67,16 +64,10 @@ def addition():
         global incor 
         incor = incor + 1
         ques = ques + 1
-    # Define end time
-    global end 
-    end = time()
 
 # Define multiplication function
 def multiplication():
     global ques
-    # Define start time and start test
-    global start 
-    start = time()
     clear_screen()
     num1 = randint(0,12)
     num2 = randint(0,12)
@@ -107,16 +98,10 @@ def multiplication():
         global incor 
         incor = incor + 1
         ques = ques + 1
-    # Define end time
-    global end 
-    end = time()
 
 # Define subtraction function
 def subtraction():
     global ques
-    # Define start time and start test
-    global start 
-    start = time()
     clear_screen()
     num1 = randint(0,50)
     num2 = randint(0,50)
@@ -158,16 +143,10 @@ def subtraction():
         global incor 
         incor = incor + 1
         ques = ques + 1
-    # Define end time
-    global end 
-    end = time()
 
 # Define division function
 def division():
    global ques
-   # Define start time and start test
-   global start 
-   start = time()
    # Define list of indexes to use for elementary division
    nume12 = [144, 132, 120, 108, 96, 84, 72, 60, 48, 36, 24, 12]
    nume11 = [121, 110, 99, 88, 77, 66, 55, 44, 33, 22, 11]
@@ -264,9 +243,6 @@ def division():
        global incor 
        incor = incor + 1
        ques = ques + 1
-   # Define end time
-   global end 
-   end = time()
 
 # Define mix operation function
 def mix():
@@ -301,32 +277,42 @@ while True:
         if oper == int(1):
             print(f"Your addition quiz will consist of {rnds} questions. Good luck!")
             sleep(2)
+            start = time()
             for z in range(int(rnds)):
                 addition()
+            end = time()
             break
         elif oper == int(2):
             print(f"Your multiplication quiz will consist of {rnds} questions. Good luck!")
             sleep(2)
+            start = time()
             for z in range(int(rnds)):
                 multiplication()
+            end = time()
             break
         elif oper == int(3):
             print(f"Your subtraction quiz will consist of {rnds} questions. Good luck!")
             sleep(2)
+            start = time()
             for z in range(int(rnds)):
                 subtraction()
+            end = time()
             break
         elif oper == int(4):
             print(f"Your division quiz will consist of {rnds} questions. Good luck!")
             sleep(2)
+            start = time()
             for z in range(int(rnds)):
                 division()
+            end = time()
             break
         elif oper == int(5):
             print(f"Your mix operation quiz will consist of {rnds} questions. Good luck!")
             sleep(2)
+            start = time()
             for z in range(int(rnds)):
                 mix()
+            end = time()
             break
         else:
             print("Please enter an operator type")
