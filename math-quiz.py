@@ -315,6 +315,8 @@ def calc_bonus(rnds, atme, perc):
         b = 5
     elif 10 <= atme < 15:
         b = 2.5
+    elif 15 <= atme:
+        return 0
     return (rnds * b)
 score = score + calc_bonus(rnds, atme, perc)
 # Read old high score and store as variable
