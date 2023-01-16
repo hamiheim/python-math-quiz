@@ -44,13 +44,12 @@ def addition():
     ans = num1 + num2
     while True:
         try:
-            uans =  int(input("> "))
+            uans = int(input("> "))
+            ua.append(uans)
+            break
         except ValueError:
             print("Please enter a number")
             continue
-        else:
-            ua.append(uans)
-            break
     if int(ans) == int(uans):
         global cor
         cor = cor + 1
@@ -78,13 +77,12 @@ def multiplication():
     ans = num1 * num2
     while True:
         try:
-            uans =  int(input("> "))
+            uans = int(input("> "))
+            ua.append(uans)
+            break
         except ValueError:
             print("Please enter a number")
             continue
-        else:
-            ua.append(uans)
-            break
     if int(ans) == int(uans):
         global cor 
         cor = cor + 1
@@ -121,12 +119,11 @@ def subtraction():
     while True:
         try:
             uans =  int(input("> "))
+            ua.append(uans)
+            break
         except ValueError:
             print("Please enter a number")
             continue
-        else:
-            ua.append(uans)
-            break
     if int(ans) == int(uans):
         global cor 
         cor = cor + 1
@@ -136,9 +133,10 @@ def subtraction():
         q.remove(prob)
         if int(num1) < int(num2):
             a.remove(num2 - num1)
+            ua.remove(uans)
         else:
             a.remove(num1 - num2)
-        ua.remove(uans)
+            ua.remove(uans)
     else:
         global incor 
         incor = incor + 1
@@ -205,12 +203,11 @@ def division():
     while True:
         try:
             uans =  int(input("> "))
+            ua.append(uans)
+            break
         except ValueError:
             print("Please enter a number")
             continue
-        else:
-            ua.append(uans)
-            break
     if int(ans) == int(uans):
         global cor 
         cor = cor + 1
@@ -548,7 +545,7 @@ while True:
                 end = time()
                 break
             elif mix == ('1,2,3,4'):
-                print(f"Your mix operation quiz will consist of {rnds} questions. Good luck!")
+                print(f"Your mix operation quiz will consist of all operators with {rnds} questions. Good luck!")
                 sleep(2)
                 start = time()
                 for z in range(int(rnds)):
