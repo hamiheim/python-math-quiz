@@ -324,8 +324,8 @@ def division():
        ques = ques + 1
 >>>>>>> 21c332dca68971c64c4c3f6f5efba6bfd2585e64
 
-# Define mix operation function
-def mix():
+# Define mix operation functions
+def mix0():
     oper = randint(1,4)
     if oper == int(1):
         addition()
@@ -335,6 +335,84 @@ def mix():
         subtraction()
     elif oper == int(4):
         division()
+
+def mix1():
+    oper = randint(1,2)
+    if oper == int(1):
+        addition()
+    elif oper == int(2):
+        multiplication()
+
+def mix2():
+    oper = randint(1,2)
+    if oper == int(1):
+        addition()
+    elif oper == int(2):
+        subtraction()
+
+def mix3():
+    oper = randint(1,2)
+    if oper == int(1):
+        addition()
+    elif oper == int(2):
+        division()
+
+def mix4():
+    oper = randint(1,2)
+    if oper == int(1):
+        multiplication()
+    elif oper == int(2):
+        division()
+
+def mix5():
+    oper = randint(1,2)
+    if oper == int(1):
+        multiplication()
+    elif oper == int(2):
+        subtraction()
+
+def mix6():
+    oper = randint(1,2)
+    if oper == int(1):
+        subtraction()
+    elif oper == int(2):
+        division()
+
+def mix7():
+    oper = randint(1,3)
+    if oper == int(1):
+        addition()
+    elif oper == int(2):
+        multiplication()
+    elif oper == int(3):
+        subtraction()
+
+def mix8():
+    oper = randint(1,3)
+    if oper == int(1):
+        addition()
+    elif oper == int(2):
+        multiplication()
+    elif oper == int(3):
+        division()
+
+def mix9():
+    oper = randint(1,3)
+    if oper == int(1):
+        addition()
+    elif oper == int(2):
+        division()
+    elif oper == int(3):
+        subtraction()
+
+def mix10():
+    oper = randint(1,3)
+    if oper == int(1):
+        multiplication()
+    elif oper == int(2):
+        division()
+    elif oper == int(3):
+        subtraction()
 
 # Define number (integer) of questions to be asked.
 # between 25, 50, or 100; included a hidden option of
@@ -387,13 +465,107 @@ while True:
             end = time()
             break
         elif oper == int(5):
-            print(f"Your mix operation quiz will consist of {rnds} questions. Good luck!")
-            sleep(2)
-            start = time()
-            for z in range(int(rnds)):
-                mix()
-            end = time()
-            break
+            print("What type of mix operation do you want to test on?")
+            mix = input("Select range of operators; i.e. 1,2 or 2,3,4 ")
+            if mix == ('1,2'):
+                print(f"Your mix operation quiz will consist of Addition and Multiplication with {rnds} questions. Good luck!")
+                sleep(2)
+                start = time()
+                for z in range(int(rnds)):
+                    mix1()
+                end = time()
+                break
+            elif mix == ('1,3'):
+                print(f"Your mix operation quiz will consist of Addition and Subtraction with {rnds} questions. Good luck!")
+                sleep(2)
+                start = time()
+                for z in range(int(rnds)):
+                    mix2()
+                end = time()
+                break
+            elif mix == ('1,4'):
+                print(f"Your mix operation quiz will consist of Addition and Division with {rnds} questions. Good luck!")
+                sleep(2)
+                start = time()
+                for z in range(int(rnds)):
+                    mix3()
+                end = time()
+                break
+            elif mix == ('2,4'):
+                print(f"Your mix operation quiz will consist of Multiplication and Divsion with {rnds} questions. Good luck!")
+                sleep(2)
+                start = time()
+                for z in range(int(rnds)):
+                    mix4()
+                end = time()
+                break
+            elif mix == ('2,3'):
+                print(f"Your mix operation quiz will consist of Multiplication and Subtraction with {rnds} questions. Good luck!")
+                sleep(2)
+                start = time()
+                for z in range(int(rnds)):
+                    mix5()
+                end = time()
+                break
+            elif mix == ('3,4'):
+                print(f"Your mix operation quiz will consist of Subtraction and Division with {rnds} questions. Good luck!")
+                sleep(2)
+                start = time()
+                for z in range(int(rnds)):
+                    mix6()
+                end = time()
+                break
+            elif mix == ('1,2,3'):
+                print(f"Your mix operation quiz will consist of Addition, Multiplication, and Subtraction with {rnds} questions. Good luck!")
+                sleep(2)
+                start = time()
+                for z in range(int(rnds)):
+                    mix7()
+                end = time()
+                break
+            elif mix == ('1,2,4'):
+                print(f"Your mix operation quiz will consist of Addition, Multiplication, and Division with {rnds} questions. Good luck!")
+                sleep(2)
+                start = time()
+                for z in range(int(rnds)):
+                    mix8()
+                end = time()
+                break
+            elif mix == ('1,3,4'):
+                print(f"Your mix operation quiz will consist of Addition, Subtraction, and Divsion with {rnds} questions. Good luck!")
+                sleep(2)
+                start = time()
+                for z in range(int(rnds)):
+                    mix9()
+                end = time()
+                break
+            elif mix == ('2,3,4'):
+                print(f"Your mix operation quiz will consist of Multiplication, Subtraction, and Divsion with {rnds} questions. Good luck!")
+                sleep(2)
+                start = time()
+                for z in range(int(rnds)):
+                    mix10()
+                end = time()
+                break
+            elif mix == ('1,2,3,4'):
+                print(f"Your mix operation quiz will consist of {rnds} questions. Good luck!")
+                sleep(2)
+                start = time()
+                for z in range(int(rnds)):
+                    mix0()
+                end = time()
+                break
+            elif not mix:
+                print(f"Defaulting to all operators!\nYour mix operation quiz will consist of {rnds} questions. Good luck!")
+                sleep(2)
+                start = time()
+                for z in range(int(rnds)):
+                    mix0()
+                end = time()
+                break
+            else:
+                print("Invalid mix operation selected")
+                continue
         else:
             print("Please enter an operator type")
             continue
