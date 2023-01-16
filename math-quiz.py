@@ -144,7 +144,6 @@ def subtraction():
 
 # Define division function
 def division():
-<<<<<<< HEAD
     global ques
     # Define list of indexes to use for elementary division
     nume12 = [144, 132, 120, 108, 96, 84, 72, 60, 48, 36, 24, 12]
@@ -221,7 +220,7 @@ def division():
         global incor 
         incor = incor + 1
         ques = ques + 1
-=======
+
    global ques
    # Define list of indexes to use for elementary division
    nume12 = [144, 132, 120, 108, 96, 84, 72, 60, 48, 36, 24, 12]
@@ -319,7 +318,6 @@ def division():
        global incor 
        incor = incor + 1
        ques = ques + 1
->>>>>>> 21c332dca68971c64c4c3f6f5efba6bfd2585e64
 
 # Define mix operation functions
 def mix0():
