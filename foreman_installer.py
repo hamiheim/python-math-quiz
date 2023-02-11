@@ -7,6 +7,7 @@
 
 import os
 from sys import exit
+from multiprocessing import cpu_count
 import platform
 import socket
 import subprocess
@@ -32,13 +33,18 @@ class tcolor:
 hname = socket.gethostname()
 ipaddr = socket.gethostbyname(socket.gethostname())
 
+# Define CPU core count and memory
+cpuc = int(cpu_count())
+memc = int(round(os.sysconf('SC_PAGE_SIZE') *
+                 os.sysconf('SC_PHYS_PAGES') / 1024000000))
+
 
 # Define required functions
 def clear_screen():
     os.system('clear')
 
 
-# Package installation functions
+# Subprocess functions for running commands directly on the host shell
 def enable_repo(repo_name):
     subprocess.run(["sudo", "dnf", "repolist", "--enablerepo", repo_name])
 
@@ -63,6 +69,14 @@ def disable_module(module_name):
     subprocess.run(["sudo", "dnf", "module", "disable", "-y", module_name])
 
 
+def enable_fw_svc(firewall_service):
+    subprocess.run(["sudo", "firewall-cmd", "--add-service", firewall_service])
+
+
+def fw_reload():
+    subprocess.run(["sudo", "firewall-cmd", "--runtime-to-permanent"])
+
+
 def katello_install(loc, org, badmun):
     subprocess.run(["sudo", "foreman-installer", "--scenario", "katello",
                     "--foreman-initial-location", loc,
@@ -78,9 +92,43 @@ def platform_id():
         if relid.index("el8"):
             pass
     except ValueError:
-        print(f"{tcolor.fl}EL8 platform not detected!")
-        print(f"{tcolor.flb}Exiting...{tcolor.dflt}")
+        print(f"{tcolor.flb}EL8 platform not detected!")
+        print(f"{tcolor.fl}Exiting!{tcolor.dflt}")
         exit()
+
+
+def resource_check():
+    # Validate physical resources meet default tuning spec
+    if cpuc >= 4 and memc >= 20:
+        pass
+    else:
+        # Remember to change from fail to warn once section below is enabled
+        print(f"{tcolor.flb}Host does not meeting minimum resources spec" +
+              "for the default tuning profile (4 core, 20 GB Memory)")
+        print(f"{tcolor.fl}Exiting!{tcolor.dflt}")
+        print('')
+        # print(f"{tcolor.msg}For dev deployment, set tuning to 'development'")
+        # print(f"{tcolor.pmt}Development deployment?{tcolor.dflt}")
+        # uans = str(input("> "))
+        # if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
+        #     print('')
+        #     print(f"{tcolor.okb}Proceeding with install!{tcolor.dflt}")
+        #     tunp = "development"
+        #     print('')
+        # elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
+        #     print('')
+        #     print(f"{tcolor.flb}Host does not meet resource spec!")
+        #     print(f"{tcolor.fl}Exiting...{tcolor.dflt}")
+        #     print('')
+        #     exit()
+        # else:
+        #     print('')
+        #     print(f"{tcolor.fl}Invalid input. Assuming no...")
+        #     print('')
+        #     print(f"{tcolor.flb}Host does not meet resource spec!")
+        #     print(f"{tcolor.fl}Exiting...{tcolor.dflt}")
+        #     print('')
+        #     exit()
 
 
 clear_screen()
@@ -261,8 +309,15 @@ if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
     print('')
     print(f"{tcolor.okb}Proceeding with Foreman Installation!{tcolor.dflt}")
     print('')
+
+    print(f"{tcolor.msg}Opening firewall for required ports{tcolor.dflt}")
+    enable_fw_svc("foreman")
+    enable_fw_svc("foreman-proxy")
+    fw_reload()
+
+    print(f"{tcolor.msg}Installing Foreman and Katello services{tcolor.dflt}")
     if katello_install(loc, org, badmun):
-        pass
+        print(f"{tcolor.okb}Foreman installation complete!{tcolor.dflt}")
     else:
         print(f"{tcolor.flb}Satellite installation failed!{tcolor.dflt}")
 
@@ -272,11 +327,14 @@ elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
           f" but foreman has {tcolor.fl}NOT{tcolor.wrn} been installed.")
     print('')
     print(f"{tcolor.msg}Execute the following to complete installation:")
-    print(f"{tcolor.dflt}foreman-installer --scenario katello \\")
+    print(f"{tcolor.dflt}firewall-cmd " +
+          "--add-service={foreman,foreman-proxy}")
+    print("firewall-cmd --runtime-to-permanent")
+    print("foreman-installer --scenario katello \\")
     print(f" --foreman-initial-location={org} \\")
     print(f" --foreman-initial-organization={loc} \\")
     print(f" --foreman-initial-admin-username={badmun}")
-    print('')
+    print(f'{tcolor.dflt}')
 else:
     print('')
     print(f"{tcolor.fl}Invalid input. Assuming no...")
