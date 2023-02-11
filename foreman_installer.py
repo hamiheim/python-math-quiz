@@ -325,9 +325,9 @@ if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
     log = "/var/log/foreman-installer/katello.log"
     print(f"{tcolor.gen}See :{tcolor.dflt}")
     print('')
-    print("-" * len(log) + len("|  |"))
+    print("-" * len(log + str("|  |")))
     print(f"| {log} |")
-    print("-" * len(log) + len("|  |"))
+    print("-" * len(log + str("|  |")))
     print('')
     print(f"{tcolor.gen}for detailed installation log.")
 elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
