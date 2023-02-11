@@ -1,154 +1,265 @@
-#!/usr/env/python3
+#!/usr/bin/env python3
 
 # Script to install Foreman server. Work is in progress for both connected
-# and disconnected installation methodsself.
+# and disconnected installation.
 # Specifically targeting EL8 for repo constraints
+# Currently does not log to a file, so logging must be done manually from shell
 
 import os
+from sys import exit
 import platform
 import socket
 import subprocess
 
-red = '\033[1;31m'
-lrd = '\033[0;31m'
-cyn = '\033[1;36m'
-lcn = '\033[0;36m'
-ylow = '\033[1;33m'
-grn = '\033[1;32m'
-prpl = '\033[1;35m'
-nclr = '\033[0m'
 
-LOG = "/tmp/foreman-install.log"
+# Define terminal color output variables using ANSII codes
+class tcolor:
+    fl = '\033[0;31m'
+    flb = '\033[1;31m'
+    msg = '\033[0;36m'
+    pmt = '\033[1;36m'
+    wrn = '\033[0;33m'
+    wrnb = '\033[1;33m'
+    ok = '\033[0;32m'
+    okb = '\033[1;32m'
+    gen = '\033[0;35m'
+    dflt = '\033[0m'
 
+
+# Define hostname and IP Address
 hname = socket.gethostname()
 ipaddr = socket.gethostbyname(socket.gethostname())
 
 
+# Define required functions
 def clear_screen():
     os.system('clear')
+
+
+# Package installation functions
+def enable_repo(repo_name):
+    subprocess.run(["sudo", "dnf", "repolist", "--enablerepo", repo_name])
+
+
+def install_package(package_name):
+    subprocess.run(["sudo", "dnf", "install", "-y", package_name])
+
+
+def update_package():
+    subprocess.run(["sudo", "dnf", "update", "-y"])
+
+
+def install_module(package_name):
+    subprocess.run(["sudo", "dnf", "module", "install", "-y", package_name])
+
+
+def enable_module(module_name):
+    subprocess.run(["sudo", "dnf", "module", "enable", "-y", module_name])
+
+
+def disable_module(module_name):
+    subprocess.run(["sudo", "dnf", "module", "disable", "-y", module_name])
+
+
+def katello_install(loc, org, badmun):
+    subprocess.run(["sudo", "foreman-installer", "--scenario", "katello",
+                    "--foreman-initial-location", loc,
+                    "--foreman-initial-organization", org,
+                    "--foreman-initial-admin-username", badmun])
+
+
+# Check platform ID
+def platform_id():
+    # Get host release info
+    relid = platform.release()
+    try:
+        if relid.index("el8"):
+            pass
+    except ValueError:
+        print(f"{tcolor.fl}EL8 platform not detected!")
+        print(f"{tcolor.flb}Exiting!{tcolor.dflt}")
+        exit()
 
 
 clear_screen()
 
 
-# Check platform ID
-def platform_id():
-    try:
-        if relid.index("el8"):
-            pass
-    except ValueError:
-        print("EL8 platform not deteced! Exiting!")
-        quit()
-
-
-# Get host release info
-relid = platform.release()
-
+# Script init banner
 banner = "# Foreman Installation Script #"
 print('')
-print("-" * len(banner))
-print(banner)
-print("-" * len(banner))
+print(f"{tcolor.gen}-" * len(banner))
+print(f"{tcolor.gen}{banner}")
+print(f"{tcolor.gen}-" * len(banner))
 print('')
 
+# Check platform ID to ensure it's EL8
 platform_id()
 
 # Check if session is "screen"ed or "tmux"ed
-#ptyv=$(echo $TERM 2>/dev/null)
-#if [[ $ptyv == screen ]]
-#then :
-#else
-#  echo -e $yellow"\nSession does not appear to be running in an asynchronous method (i.e screen or tmux)"$ncolor
-#  echo -e $lcyan"\nForeman installation can be time consuming, and may not finish before an idle timeout is reached for remote sessions."
-#  echo -e $cyan"\nDo you wish to proceed?"
-#  read yn
-#  while true
-#  do
-#    case $yn in
-#      [Yy]) echo -e $yellow"\nProceeding without screen/tmux"$nocolor
-#        break;;
-#      [Nn]) echo -e $red"\nExiting!"$ncolor
-#        exit;
-#        break;;
-#      *) echo -e $lred"\nInvalid Input!"$nocolor
-#    esac
-#  done
-#fi
-#
-#if grep $hname /etc/hosts || nslookup $ipaddr 1>/dev/null;
-#then :
-#else
-#  echo -e $red"\nReverse DNS failed! Configure hosts file with the following entry:"$ncolor
-#  echo -e "$hname  $ipaddr\n"
-#  echo -e $purple"\nDetails can be found in $LOG and /var/log/foreman-installer"$ncolor
-#  exit
-#fi
-#
-#echo -e $cyan"\nIs this a disconnected environment?"$ncolor
-#read yn
-#while true
-#do
-#  case $yn in 
-#    [Yy]) echo -e $red"\nScript is not configured to handle disconnected systems yet. Sorry"
-#      echo -e $lred"\nExiting..."$ncolor; exit;;
-#    [Nn]) echo -e $green"\nContinuing with online installation..."$ncolor
-#      break;;
-#    *) echo -e $lred"\nInvalid input!"$ncolor
-#  esac
-#done
-#
-#echo -e $cyan"\nWhat version of Foreman are you targeting?"$ncolor
-#echo -e $lcyan"If unknown, browse to $ncolor docs.theforeman.org $lcyan for current supported release versions"$ncolor
-#read fver
-#
-#echo -e $cyan"\nWhat version of Katello are you targeting?"$ncolor
-#read kver
-#
-#echo -e $lcyan"\nConfiguring repositories..."$purple
-#sudo dnf install -y https://yum.theforeman.org/releases/$fver/el8/x86_64/foreman-release.rpm
-#sudo dnf install -y https://yum.theforeman.org/katello/$kver/katello/el8/x86_64/katello-repos-latest.rpm
-#sudo dnf install -y https://yum.puppet.com/puppet7-release-el-8.noarch.rpm
-#sudo dnf module -y disable postgresql:10
-#sudo dnf module -y enable postgresql:12
-#sudo dnf module -y disable ruby:2.5
-#sudo dnf module -y enable ruby:2.7
-#sudo dnf module -y enable katello:el8 pulpcore:el8
-#sudo dnf repolist --enablerepo={appstream,baseos} &>/dev/null
-#
-#echo -e $lcyan"\nInstalling packages..."$purple
-#sudo dnf update -y
-#sudo dnf install foreman-installer-katello -y
-#
-#echo -e $green"\nPackage installation complete."
-#echo -e $lcyan"\nRun $ncolor rpm -qa kernel --last $lcyan to see if a reboot is needed."$ncolor
-#
-#echo -e $cyan"\nHost is ready for Foreman installation. Would you like to proceed?"$ncolor
-#read yn
-#while true
-#do
-#  case $yn in
-#    [Yy]) echo -e $green"\nProceeding with Foreman Installation!\n"$ncolor
-#      echo -e $cyan"\nName of organization?"$ncolor
-#      read org
-#      echo -e $cyan"\nName of location?"$ncolor
-#      read loc
-#      echo -e $cyan"\nBuilt-in administrator username?"$ncolor
-#      read badmun
-#      if sudo foreman-installer --scenario katello --foreman-initial-location="$loc" --foreman-initial-organization="org" --foreman-initial-admin-username="$badmun"
-#      then
-#        echo -e $green"\nForeman Installation complete!"
-#        echo -e "Browse to https://$hname:443 to peform site configurations"$nocolor
-#      else
-#        echo -e $red"\nForeman Installation failed!"$ncolor
-#      fi
-#      break;;
-#    [Nn]) echo -e $yellow"\nPackage installation complete but Foreman has not been installed"
-#      echo -e $lcyan"Execute 'foreman-installer --scenario katello' to complete installation."$ncolor
-#      break;;
-#    *) echo -e $lred"\nInvalid input!"$ncolor
-#  esac
-#done
-#
-#sed -i '/Initial credentials are/c\      {{ Initial credentials have been redacted }}' /tmp/foreman-install.log
-#
-#echo -e $purple"\nDetails can be found in $LOG and /var/log/foreman-installer"$ncolor
+# If not, prompt user to continue at own risk
+ptyv = os.environ['TERM']
+if str(ptyv) == str("screen"):
+    pass
+else:
+    print(f"{tcolor.wrnb}Session does not appear to be running in" +
+          " asynchronous method (i.e screen or tmux)")
+    print(f"{tcolor.msg}Foreman installation can be time consuming")
+    print("It may not finish before remote session reaches idle timeout.")
+    print('')
+    print(f"{tcolor.pmt}Do you wish to proceed?{tcolor.dflt}")
+
+uans = str(input("> "))
+if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
+    print('')
+    print(f"{tcolor.wrn}Proceeding without screen/tmux{tcolor.dflt}")
+elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
+    print('')
+    print(f"{tcolor.flb}Exiting!{tcolor.dflt}")
+    exit()
+else:
+    print('')
+    print(f"{tcolor.fl}Invalid input. Assuming no...")
+    print(f"{tcolor.flb}Exiting!{tcolor.dflt}")
+    exit()
+
+# Validate reverse DNS record for host (required for install)
+try:
+    socket.gethostbyaddr(ipaddr)
+except socket.gaierror:
+    print('')
+    print(f"{tcolor.flb}Reverse DNS failed! Configure host file with" +
+          " the following entry:{tcolor.dflt}")
+    print('')
+    print("-" * len(hname + str('    ') + str('|  |') + ipaddr))
+    print(f"| {hname}    {ipaddr} |")
+    print("-" * len(hname + str('    ') + str('|  |') + ipaddr))
+    print('')
+
+# Check if system has internet access to pull packages
+# Still working on disconnected installation pieces
+print(f"{tcolor.pmt}Does this host have access to online repos?{tcolor.dflt}")
+uans = str(input("> "))
+if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
+    print('')
+    print(f"{tcolor.okb}Proceeding with install!{tcolor.dflt}")
+    print('')
+elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
+    print('')
+    print(f"{tcolor.flb}Script is not setup for disconnected installs")
+    print(f"{tcolor.fl}Exiting!{tcolor.dflt}")
+    print('')
+else:
+    print('')
+    print(f"{tcolor.fl}Invalid input. Assuming no...")
+    print(f"{tcolor.flb}Script is not setup for disconnected installs")
+    print('')
+    print(f"{tcolor.fl}Exiting!{tcolor.dflt}")
+    print('')
+    exit()
+
+# Prompt user for targeted versions
+print(f"{tcolor.pmt}What version of Foreman and Katello" +
+      " are you targeting?")
+print('')
+print(f"{tcolor.msg}For a list of support versions, browse to:{tcolor.dflt}")
+print("https://docs.theforeman.org")
+print('')
+
+while True:
+    try:
+        fver = float(input(tcolor.pmt + "Foreman: " + tcolor.dflt))
+        break
+    except ValueError:
+        print(f"{tcolor.fl}Invalid input!{tcolor.dflt}")
+
+while True:
+    try:
+        kver = float(input(tcolor.pmt + "Katello: " + tcolor.dflt))
+        break
+    except ValueError:
+        print(f"{tcolor.fl}Invalid input!{tcolor.dflt}")
+
+
+# Setup/install repositories required for installation
+print('')
+print(f"{tcolor.msg}Configuring repositories...{tcolor.dflt}")
+print('')
+subprocess.run(["sudo", "-v"])
+install_package("https://yum.theforeman.org/releases/" +
+                str(fver) + "/el8/x86_64/foreman-release.rpm")
+install_package("https://yum.theforeman.org/katello/" + str(kver) +
+                "/katello/el8/x86_64/katello-repos-latest.rpm")
+install_package("https://yum.puppet.com/puppet7-release-el-8.noarch.rpm")
+enable_repo("appstream")
+enable_repo("baseos")
+print(f"{tcolor.ok}Repositories configured!{tcolor.dflt}")
+print('')
+
+# Disabled conflicting modules, and enabled required modules for installation
+# Errors may be encountered if modules are already enabled/disabled
+# These can be safely ignored. I will work on error handling later
+print(f"{tcolor.msg}Configuring DNF Modules...{tcolor.dflt}")
+disable_module("postgresql:10")
+disable_module("ruby:2.5")
+enable_module("postgresql:12")
+enable_module("ruby:2.7")
+enable_module("katello:el8")
+enable_module("pulpcore:el8")
+print(f"{tcolor.ok}DNF Modules configured!{tcolor.dflt}")
+print('')
+
+# Install required packages
+print(f"{tcolor.msg}Installing packages...{tcolor.dflt}")
+update_package()
+install_package("foreman-installer-katello")
+print(f"{tcolor.ok}Package installation complete!{tcolor.dflt}")
+print('')
+
+# Part of package installation is to do a full system update
+# User should reboot host if kernel was updated
+print(f"{tcolor.msg}Run {tcolor.dflt}rpm -qa kernel --last{tcolor.msg}" +
+      f" to see if a reboot is needed.{tcolor.dflt}")
+
+# Define paramters for Foreman installation
+print('')
+org = input(tcolor.pmt + "Organization: " + tcolor.dflt)
+loc = input(tcolor.pmt + "Location: " + tcolor.dflt)
+badmun = input(tcolor.pmt + "Admin username: " + tcolor.dflt)
+print('')
+
+# Prompt user to continue with install
+print(f"{tcolor.msg}Host is ready for Foreman Installation.")
+print(f"{tcolor.pmt}Would you like to proceed?{tcolor.dflt}")
+uans = str(input("> "))
+if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
+    print('')
+    print(f"{tcolor.okb}Proceeding with Foreman Installation!{tcolor.dflt}")
+    print('')
+    if katello_install(loc, org, badmun):
+        pass
+    else:
+        print(f"{tcolor.flb}Satellite installation failed!{tcolor.dflt}")
+
+elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
+    print('')
+    print(f"{tcolor.wrn}Host is setup for Foreman installation" +
+          f" but foreman has {tcolor.fl}NOT{tcolor.wrn} been installed.")
+    print('')
+    print(f"{tcolor.msg}Execute the following to complete installation:")
+    print(f"{tcolor.dflt}foreman-installer --scenario katello \\")
+    print(f" --foreman-initial-location={org} \\")
+    print(f" --foreman-initial-organization={loc} \\")
+    print(f" --foreman-initial-admin-username={badmun}")
+    print('')
+else:
+    print('')
+    print(f"{tcolor.fl}Invalid input. Assuming no...")
+    print(f"{tcolor.wrn}Host is setup for Foreman installation" +
+          f" but foreman has {tcolor.fl}NOT{tcolor.wrn} been installed.")
+    print('')
+    print(f"{tcolor.msg}Execute the following to complete installation:")
+    print(f"{tcolor.dflt}foreman-installer --scenario katello \\")
+    print(f" --foreman-initial-location={org} \\")
+    print(f" --foreman-initial-organization={loc} \\")
+    print(f" --foreman-initial-admin-username={badmun}")
+    print('')
