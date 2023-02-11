@@ -109,7 +109,7 @@ def resource_check():
         print('')
         # print(f"{tcolor.msg}For dev deployment, set tuning to 'development'")
         # print(f"{tcolor.pmt}Development deployment?{tcolor.dflt}")
-        # uans = str(input("> "))
+        # uans = str(input("(Y/n): "))
         # if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
         #     print('')
         #     print(f"{tcolor.okb}Proceeding with install!{tcolor.dflt}")
@@ -157,7 +157,7 @@ else:
     print("It may not finish before remote session reaches idle timeout.")
     print('')
     print(f"{tcolor.pmt}Do you wish to proceed?{tcolor.dflt}")
-    uans = str(input("> "))
+    uans = str(input("(Y/n): "))
     if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
         print('')
         print(f"{tcolor.wrn}Proceeding without screen/tmux{tcolor.dflt}")
@@ -185,7 +185,7 @@ except dns.resolver.NXDOMAIN:
     print("-" * len(ipaddr + str('    ') + str('|  |') + hname))
     print('')
     print(f"{tcolor.pmt}Do you wish to continue{tcolor.dflt}")
-    uans = str(input("> "))
+    uans = str(input("(Y/n): "))
     if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
         print('')
         print(f"{tcolor.wrn}Proceeding with install!{tcolor.dflt}")
@@ -211,7 +211,7 @@ except dns.resolver.NXDOMAIN:
 # Check if system has internet access to pull packages
 # Still working on disconnected installation pieces
 print(f"{tcolor.pmt}Does this host have access to online repos?{tcolor.dflt}")
-uans = str(input("> "))
+uans = str(input("(Y/n): "))
 if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
     print('')
     print(f"{tcolor.okb}Proceeding with install!{tcolor.dflt}")
@@ -258,7 +258,6 @@ while True:
 print('')
 print(f"{tcolor.msg}Configuring repositories...{tcolor.dflt}")
 print('')
-subprocess.run(["sudo", "-v"])
 install_package("https://yum.theforeman.org/releases/" +
                 str(fver) + "/el8/x86_64/foreman-release.rpm")
 install_package("https://yum.theforeman.org/katello/" + str(kver) +
@@ -304,23 +303,33 @@ print('')
 # Prompt user to continue with install
 print(f"{tcolor.msg}Host is ready for Foreman Installation.")
 print(f"{tcolor.pmt}Would you like to proceed?{tcolor.dflt}")
-uans = str(input("> "))
+uans = str(input("(Y/n): "))
 if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
     print('')
     print(f"{tcolor.okb}Proceeding with Foreman Installation!{tcolor.dflt}")
     print('')
 
-    print(f"{tcolor.msg}Opening firewall for required ports{tcolor.dflt}")
+    print(f"{tcolor.msg}Opening firewall for required services{tcolor.dflt}")
     enable_fw_svc("foreman")
     enable_fw_svc("foreman-proxy")
     fw_reload()
 
+    # Had to remove logic for successful installation since Foreman
+    # doesn't send a clean exit code (0) after successful install.
+    # Will revist once the exit code received for both successful
+    # and failed installations have been identified.
+    print('')
     print(f"{tcolor.msg}Installing Foreman and Katello services{tcolor.dflt}")
-    if katello_install(loc, org, badmun):
-        print(f"{tcolor.okb}Foreman installation complete!{tcolor.dflt}")
-    else:
-        print(f"{tcolor.flb}Satellite installation failed!{tcolor.dflt}")
-
+    katello_install(loc, org, badmun)
+    print(f"{tcolor.okb}Foreman installation complete!{tcolor.dflt}")
+    log = "/var/log/foreman-installer/katello.log"
+    print(f"{tcolor.gen}See :{tcolor.dflt}")
+    print('')
+    print("-" * len(log) + len("|  |"))
+    print(f"| {log} |")
+    print("-" * len(log) + len("|  |"))
+    print('')
+    print(f"{tcolor.gen}for detailed installation log.")
 elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
     print('')
     print(f"{tcolor.wrn}Host is setup for Foreman installation" +
