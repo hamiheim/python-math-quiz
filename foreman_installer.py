@@ -10,6 +10,8 @@ from sys import exit
 import platform
 import socket
 import subprocess
+import dns.resolver
+import dns.reversename
 
 
 # Define terminal color output variables using ANSII codes
@@ -77,7 +79,7 @@ def platform_id():
             pass
     except ValueError:
         print(f"{tcolor.fl}EL8 platform not detected!")
-        print(f"{tcolor.flb}Exiting!{tcolor.dflt}")
+        print(f"{tcolor.flb}Exiting...{tcolor.dflt}")
         exit()
 
 
@@ -89,7 +91,7 @@ banner = "# Foreman Installation Script #"
 print('')
 print(f"{tcolor.gen}-" * len(banner))
 print(f"{tcolor.gen}{banner}")
-print(f"{tcolor.gen}-" * len(banner))
+print(f"{tcolor.gen}-{tcolor.dflt}" * len(banner))
 print('')
 
 # Check platform ID to ensure it's EL8
@@ -107,33 +109,56 @@ else:
     print("It may not finish before remote session reaches idle timeout.")
     print('')
     print(f"{tcolor.pmt}Do you wish to proceed?{tcolor.dflt}")
-
-uans = str(input("> "))
-if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
-    print('')
-    print(f"{tcolor.wrn}Proceeding without screen/tmux{tcolor.dflt}")
-elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
-    print('')
-    print(f"{tcolor.flb}Exiting!{tcolor.dflt}")
-    exit()
-else:
-    print('')
-    print(f"{tcolor.fl}Invalid input. Assuming no...")
-    print(f"{tcolor.flb}Exiting!{tcolor.dflt}")
-    exit()
+    uans = str(input("> "))
+    if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
+        print('')
+        print(f"{tcolor.wrn}Proceeding without screen/tmux{tcolor.dflt}")
+    elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
+        print('')
+        print(f"{tcolor.flb}Exiting...{tcolor.dflt}")
+        exit()
+    else:
+        print('')
+        print(f"{tcolor.fl}Invalid input. Assuming no...")
+        print(f"{tcolor.flb}Exiting...{tcolor.dflt}")
+        exit()
 
 # Validate reverse DNS record for host (required for install)
 try:
-    socket.gethostbyaddr(ipaddr)
-except socket.gaierror:
+    dns.resolver.query(dns.reversename.from_address(ipaddr), 'PTR')
+except dns.resolver.NXDOMAIN:
     print('')
-    print(f"{tcolor.flb}Reverse DNS failed! Configure host file with" +
-          " the following entry:{tcolor.dflt}")
+    print(f"{tcolor.flb}Reverse DNS lookup failed!{tcolor.dflt}")
+    print(f"{tcolor.msg}Ensure hosts file has" +
+          f" the following entry or install will fail:{tcolor.dflt}")
     print('')
     print("-" * len(hname + str('    ') + str('|  |') + ipaddr))
-    print(f"| {hname}    {ipaddr} |")
-    print("-" * len(hname + str('    ') + str('|  |') + ipaddr))
+    print(f"| {ipaddr}    {hname} |")
+    print("-" * len(ipaddr + str('    ') + str('|  |') + hname))
     print('')
+    print(f"{tcolor.pmt}Do you wish to continue{tcolor.dflt}")
+    uans = str(input("> "))
+    if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
+        print('')
+        print(f"{tcolor.wrn}Proceeding with install!{tcolor.dflt}")
+        print('')
+    elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
+        print('')
+        print(f"{tcolor.wrn}Submit PTR record in DNS" +
+              " server or configure hosts file with above entry")
+        print('')
+        print(f"{tcolor.fl}Exiting...{tcolor.dflt}")
+        print('')
+        exit()
+    else:
+        print('')
+        print(f"{tcolor.fl}Invalid input. Assuming no...")
+        print(f"{tcolor.wrn}Submit PTR record in DNS" +
+              " server or configure hosts file with above entry")
+        print('')
+        print(f"{tcolor.fl}Exiting...{tcolor.dflt}")
+        print('')
+        exit()
 
 # Check if system has internet access to pull packages
 # Still working on disconnected installation pieces
@@ -146,14 +171,15 @@ if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
 elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
     print('')
     print(f"{tcolor.flb}Script is not setup for disconnected installs")
-    print(f"{tcolor.fl}Exiting!{tcolor.dflt}")
+    print(f"{tcolor.fl}Exiting...{tcolor.dflt}")
     print('')
+    exit()
 else:
     print('')
     print(f"{tcolor.fl}Invalid input. Assuming no...")
     print(f"{tcolor.flb}Script is not setup for disconnected installs")
     print('')
-    print(f"{tcolor.fl}Exiting!{tcolor.dflt}")
+    print(f"{tcolor.fl}Exiting...{tcolor.dflt}")
     print('')
     exit()
 
