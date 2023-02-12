@@ -447,3 +447,8 @@ else:
         print(f" --foreman-initial-organization={loc} \\")
         print(f" --foreman-initial-admin-username={badmun}")
         print('')
+
+# Future plans
+# - Add ability to specify additional plugins to enable
+# - Option for setup disconnected installation media only
+# - Disconnected installation
