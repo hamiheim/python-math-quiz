@@ -84,6 +84,14 @@ def katello_install(loc, org, badmun):
                     "--foreman-initial-admin-username", badmun])
 
 
+def katello_install_dev(loc, org, badmun):
+    subprocess.run(["sudo", "foreman-installer", "--scenario", "katello",
+                    "--tuning", "development",
+                    "--foreman-initial-location", loc,
+                    "--foreman-initial-organization", org,
+                    "--foreman-initial-admin-username", badmun])
+
+
 # Check platform ID
 def platform_id():
     # Get host release info
@@ -98,37 +106,45 @@ def platform_id():
 
 
 def resource_check():
+    global tunp
     # Validate physical resources meet default tuning spec
     if cpuc >= 4 and memc >= 20:
         pass
     else:
         # Remember to change from fail to warn once section below is enabled
-        print(f"{tcolor.flb}Host does not meeting minimum resources spec" +
+        print(f"{tcolor.flb}Host does not meet minimum resources spec" +
               "for the default tuning profile (4 core, 20 GB Memory)")
         print(f"{tcolor.fl}Exiting!{tcolor.dflt}")
         print('')
-        # print(f"{tcolor.msg}For dev deployment, set tuning to 'development'")
-        # print(f"{tcolor.pmt}Development deployment?{tcolor.dflt}")
-        # uans = str(input("(Y/n): "))
-        # if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
-        #     print('')
-        #     print(f"{tcolor.okb}Proceeding with install!{tcolor.dflt}")
-        #     tunp = "development"
-        #     print('')
-        # elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
-        #     print('')
-        #     print(f"{tcolor.flb}Host does not meet resource spec!")
-        #     print(f"{tcolor.fl}Exiting...{tcolor.dflt}")
-        #     print('')
-        #     exit()
-        # else:
-        #     print('')
-        #     print(f"{tcolor.fl}Invalid input. Assuming no...")
-        #     print('')
-        #     print(f"{tcolor.flb}Host does not meet resource spec!")
-        #     print(f"{tcolor.fl}Exiting...{tcolor.dflt}")
-        #     print('')
-        #     exit()
+        print(f"{tcolor.msg}For dev deployment, set tuning to 'development'")
+        print(f"{tcolor.pmt}Development deployment?{tcolor.dflt}")
+        uans = str(input("(Y/n): "))
+        if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
+            if memc >= 6:
+                pass
+            else:
+                print(f"{tcolor.flb}Host does not meet the minimum resources" +
+                      "for the development tuning profile" +
+                      "(1 core, 6 GB Memory)")
+                print(f"{tcolor.fl}Exiting!{tcolor.dflt}")
+                print('')
+                print(f"{tcolor.okb}Proceeding with install!{tcolor.dflt}")
+                tunp = "development"
+                print('')
+        elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
+            print('')
+            print(f"{tcolor.flb}Host does not meet resource spec!")
+            print(f"{tcolor.fl}Exiting...{tcolor.dflt}")
+            print('')
+            exit()
+        else:
+            print('')
+            print(f"{tcolor.fl}Invalid input. Assuming no...")
+            print('')
+            print(f"{tcolor.flb}Host does not meet resource spec!")
+            print(f"{tcolor.fl}Exiting...{tcolor.dflt}")
+            print('')
+            exit()
 
 
 clear_screen()
@@ -318,6 +334,21 @@ if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
     # doesn't send a clean exit code (0) after successful install.
     # Will revist once the exit code received for both successful
     # and failed installations have been identified.
+    if tunp == "development":
+        print(f"{tcolor.msg}Installing Foreman" +
+              f" and Katello services{tcolor.dflt}")
+        katello_install_dev(loc, org, badmun)
+        print(f"{tcolor.okb}Foreman installation complete!{tcolor.dflt}")
+        log = "/var/log/foreman-installer/katello.log"
+        print(f"{tcolor.gen}See :{tcolor.dflt}")
+        print('')
+        print("-" * len(log + str("|  |")))
+        print(f"| {log} |")
+        print("-" * len(log + str("|  |")))
+        print('')
+        print(f"{tcolor.gen}for detailed installation log.")
+    else:
+        pass
     print('')
     print(f"{tcolor.msg}Installing Foreman and Katello services{tcolor.dflt}")
     katello_install(loc, org, badmun)
