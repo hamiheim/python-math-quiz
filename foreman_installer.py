@@ -14,6 +14,9 @@ import subprocess
 import dns.resolver
 import dns.reversename
 
+# Define tunp variable
+tunp = ''
+
 
 # Define terminal color output variables using ANSII codes
 class tcolor:
@@ -112,10 +115,9 @@ def resource_check():
         pass
     else:
         # Remember to change from fail to warn once section below is enabled
-        print(f"{tcolor.flb}Host does not meet minimum resources spec" +
-              f" for the default tuning profile {tcolor.fl}" +
+        print(f"{tcolor.wrnb}Host does not meet minimum resources spec" +
+              f" for the default tuning profile {tcolor.wrn}" +
               "(4 core, 20 GB Memory)")
-        print(f"{tcolor.fl}Exiting!{tcolor.dflt}")
         print('')
         print(f"{tcolor.msg}For dev deployment, we'll set tuning to " +
               f"{tcolor.dflt}development")
