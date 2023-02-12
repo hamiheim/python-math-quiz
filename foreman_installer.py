@@ -113,24 +113,29 @@ def resource_check():
     else:
         # Remember to change from fail to warn once section below is enabled
         print(f"{tcolor.flb}Host does not meet minimum resources spec" +
-              "for the default tuning profile (4 core, 20 GB Memory)")
+              f" for the default tuning profile {tcolor.fl}" +
+              "(4 core, 20 GB Memory)")
         print(f"{tcolor.fl}Exiting!{tcolor.dflt}")
         print('')
-        print(f"{tcolor.msg}For dev deployment, set tuning to 'development'")
+        print(f"{tcolor.msg}For dev deployment, we'll set tuning to " +
+              f"{tcolor.dflt}development")
+        print('')
         print(f"{tcolor.pmt}Development deployment?{tcolor.dflt}")
         uans = str(input("(Y/n): "))
         if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
             if memc >= 6:
-                pass
-            else:
-                print(f"{tcolor.flb}Host does not meet the minimum resources" +
-                      "for the development tuning profile" +
-                      "(1 core, 6 GB Memory)")
-                print(f"{tcolor.fl}Exiting!{tcolor.dflt}")
-                print('')
-                print(f"{tcolor.okb}Proceeding with install!{tcolor.dflt}")
                 tunp = "development"
                 print('')
+                print(f"{tcolor.okb}Proceeding with install!{tcolor.dflt}")
+                print('')
+            else:
+                print('')
+                print(f"{tcolor.flb}Host does not meet the minimum resources" +
+                      " for the development tuning profile" +
+                      f"{tcolor.fl} (1 core, 6 GB Memory)")
+                print(f"{tcolor.fl}Exiting!{tcolor.dflt}")
+                print('')
+                exit()
         elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
             print('')
             print(f"{tcolor.flb}Host does not meet resource spec!")
@@ -160,6 +165,9 @@ print('')
 
 # Check platform ID to ensure it's EL8
 platform_id()
+
+# Check host resources
+resource_check()
 
 # Check if session is "screen"ed or "tmux"ed
 # If not, prompt user to continue at own risk
