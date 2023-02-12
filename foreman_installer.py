@@ -26,14 +26,14 @@ arg.add_argument("-f", "--foreman", action="store",
                  help="Foreman version", default="")
 arg.add_argument("-k", "--katello", action="store",
                  help="Katello version", default="")
-arg.add_argument("-o", "--org", action="store",
-                 help="Organization", default="Default_Organization")
 arg.add_argument("-l", "--loc", action="store", help="Location",
                  default="Default_Location")
+arg.add_argument("-o", "--org", action="store",
+                 help="Organization", default="Default_Organization")
+arg.add_argument("-t", "--tune", action="store", help="Tuning profile",
+                 default="default")
 arg.add_argument("-u", "--username", action="store",
                  help="Admin username", default="admin")
-arg.add_argument("-t", "--tune", action="store", help="Tuning profile",
-                 default="")
 flg = arg.parse_args()
 
 # Define required variables
@@ -109,16 +109,9 @@ def fw_reload():
     subprocess.run(["sudo", "firewall-cmd", "--runtime-to-permanent"])
 
 
-def katello_install(loc, org, badmun):
+def katello_install(loc, org, badmun, tunp):
     subprocess.run(["sudo", "foreman-installer", "--scenario", "katello",
-                    "--foreman-initial-location", loc,
-                    "--foreman-initial-organization", org,
-                    "--foreman-initial-admin-username", badmun])
-
-
-def katello_install_dev(loc, org, badmun):
-    subprocess.run(["sudo", "foreman-installer", "--scenario", "katello",
-                    "--tuning", "development",
+                    "--tuning", tunp,
                     "--foreman-initial-location", loc,
                     "--foreman-initial-organization", org,
                     "--foreman-initial-admin-username", badmun])
@@ -191,6 +184,7 @@ def foreman_install():
     global loc
     global org
     global badmun
+    global tunp
     print(f"{tcolor.okb}Proceeding with Foreman Installation!{tcolor.dflt}")
     print('')
 
@@ -204,22 +198,8 @@ def foreman_install():
     # doesn't send a clean exit code (0) after successful install.
     # Will revist once the exit code received for both successful
     # and failed installations have been identified.
-    if tunp == "development":
-        print(f"{tcolor.msg}Installing Foreman" +
-              f" and Katello services{tcolor.dflt}")
-        katello_install_dev(loc, org, badmun)
-        print(f"{tcolor.okb}Foreman installation complete!{tcolor.dflt}")
-        log = "/var/log/foreman-installer/katello.log"
-        print(f"{tcolor.gen}See :{tcolor.dflt}")
-        print('')
-        print("-" * len(log + str("|  |")))
-        print(f"| {log} |")
-        print("-" * len(log + str("|  |")))
-        print('')
-        print(f"{tcolor.gen}for detailed installation log.")
-    print('')
     print(f"{tcolor.msg}Installing Foreman and Katello services{tcolor.dflt}")
-    katello_install(loc, org, badmun)
+    katello_install(loc, org, badmun, tunp)
     print(f"{tcolor.okb}Foreman installation complete!{tcolor.dflt}")
     log = "/var/log/foreman-installer/katello.log"
     print(f"{tcolor.gen}See the following location for details:{tcolor.dflt}")
