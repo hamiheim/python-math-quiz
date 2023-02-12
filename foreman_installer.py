@@ -30,7 +30,9 @@ arg.add_argument("-l", "--loc", action="store", help="Location",
                  default="Default_Location")
 arg.add_argument("-o", "--org", action="store",
                  help="Organization", default="Default_Organization")
-arg.add_argument("-t", "--tune", action="store", help="Tuning profile",
+arg.add_argument("-t", "--tune", action="store",
+                 help="Tuning profile. Acceptable options include:" +
+                 " default, medium, large, extra-large, extra-extra-large",
                  default="default")
 arg.add_argument("-u", "--username", action="store",
                  help="Admin username", default="admin")
@@ -423,6 +425,9 @@ else:
               f" but foreman has {tcolor.fl}NOT{tcolor.wrn} been installed.")
         print('')
         print(f"{tcolor.msg}Execute the following to complete installation:")
+        print(f"{tcolor.dflt}firewall-cmd " +
+              "--add-service={foreman,foreman-proxy}")
+        print("firewall-cmd --runtime-to-permanent")
         print(f"{tcolor.dflt}foreman-installer --scenario katello \\")
         print(f" --foreman-initial-location={org} \\")
         print(f" --foreman-initial-organization={loc} \\")
