@@ -8,6 +8,7 @@
 import os
 from sys import exit
 from multiprocessing import cpu_count
+import psutil
 import platform
 import argparse
 import socket
@@ -66,11 +67,6 @@ class tcolor:
 # Define hostname and IP Address
 hname = socket.gethostname()
 ipaddr = socket.gethostbyname(socket.gethostname())
-
-# Define CPU core count and memory
-cpuc = int(cpu_count())
-memc = int(round(os.sysconf('SC_PAGE_SIZE') *
-                 os.sysconf('SC_PHYS_PAGES') / 1024000000))
 
 
 # Define required functions
@@ -134,8 +130,13 @@ def platform_id():
 
 def resource_check():
     global tunp
+
+    # Define CPU core count and memory
+    cpuc = int(cpu_count())
+    memc = int(round(psutil.virtual_memory().total / 1024000000))
+
     # Validate physical resources meet default tuning spec
-    if cpuc < 4 and memc < 20:
+    if cpuc < 4 or memc < 20:
         print(f"{tcolor.wrnb}Host does not meet minimum resources spec" +
               f" for the default tuning profile {tcolor.wrn}" +
               "(4 core, 20 GB Memory)")
@@ -145,7 +146,19 @@ def resource_check():
         print('')
         if npmt:
             print(f"{tcolor.wrn}Assuming dev deployment...{tcolor.dflt}")
-            tunp = "development"
+            if memc >= 6:
+                tunp = "development"
+                print('')
+                print(f"{tcolor.okb}Proceeding with install!{tcolor.dflt}")
+                print('')
+            else:
+                print('')
+                print(f"{tcolor.flb}Host does not meet the minimum " +
+                      "resources for the development tuning profile" +
+                      f"{tcolor.fl} (1 core, 6 GB Memory)")
+                print(f"{tcolor.fl}Exiting!{tcolor.dflt}")
+                print('')
+                exit()
             print('')
         else:
             print(f"{tcolor.pmt}Is this a development " +
