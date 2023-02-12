@@ -9,13 +9,39 @@ import os
 from sys import exit
 from multiprocessing import cpu_count
 import platform
+import argparse
 import socket
 import subprocess
 import dns.resolver
 import dns.reversename
 
-# Define tunp variable
-tunp = ''
+# Define arguements for script
+arg = argparse.ArgumentParser(description="Foreman installer script",
+                              formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+arg.add_argument("-d", "--discon", action="store_true",
+                 help="Disconnected mode")
+arg.add_argument("-f", "--foreman", action="store",
+                 help="Foreman version", default="")
+arg.add_argument("-k", "--katello", action="store",
+                 help="Katello version", default="")
+arg.add_argument("-o", "--org", action="store",
+                 help="Organization", default="")
+arg.add_argument("-l", "--loc", action="store", help="Location",
+                 default="")
+arg.add_argument("-u", "--username", action="store",
+                 help="Admin username", default="")
+arg.add_argument("-t", "--tune", action="store", help="Tuning profile",
+                 default="")
+flg = arg.parse_args()
+
+# Define required variables
+disconnected = flg.discon
+fver = flg.foreman
+kver = flg.katello
+tunp = flg.tune
+org = flg.org
+loc = flg.loc
+badmun = flg.username
 
 
 # Define terminal color output variables using ANSII codes
@@ -234,50 +260,41 @@ except dns.resolver.NXDOMAIN:
         print('')
         exit()
 
-# Check if system has internet access to pull packages
-# Still working on disconnected installation pieces
-print(f"{tcolor.pmt}Does this host have access to online repos?{tcolor.dflt}")
-uans = str(input("(Y/n): "))
-if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
-    print('')
-    print(f"{tcolor.okb}Proceeding with install!{tcolor.dflt}")
-    print('')
-elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
-    print('')
-    print(f"{tcolor.flb}Script is not setup for disconnected installs")
-    print(f"{tcolor.fl}Exiting...{tcolor.dflt}")
-    print('')
-    exit()
-else:
-    print('')
-    print(f"{tcolor.fl}Invalid input. Assuming no...")
-    print(f"{tcolor.flb}Script is not setup for disconnected installs")
-    print('')
+if disconnected:
+    print(f"{tcolor.flb}Script is not yet setup for disconnected installs")
     print(f"{tcolor.fl}Exiting...{tcolor.dflt}")
     print('')
     exit()
 
-# Prompt user for targeted versions
-print(f"{tcolor.pmt}What version of Foreman and Katello" +
-      " are you targeting?")
-print('')
-print(f"{tcolor.msg}For a list of support versions, browse to:{tcolor.dflt}")
-print("https://docs.theforeman.org")
-print('')
+# Define Foreman and Katello versions
+if len(fver) == 0:
+    print(f"{tcolor.pmt}What version of Foreman" +
+          " are you targeting?")
+    print('')
+    print(f"{tcolor.msg}For a list of supported" +
+          f" versions, browse to:{tcolor.dflt}")
+    print("https://docs.theforeman.org")
+    print('')
+    while True:
+        try:
+            fver = float(input(tcolor.pmt + "Foreman: " + tcolor.dflt))
+            break
+        except ValueError:
+            print(f"{tcolor.fl}Invalid input!{tcolor.dflt}")
 
-while True:
-    try:
-        fver = float(input(tcolor.pmt + "Foreman: " + tcolor.dflt))
-        break
-    except ValueError:
-        print(f"{tcolor.fl}Invalid input!{tcolor.dflt}")
-
-while True:
-    try:
-        kver = float(input(tcolor.pmt + "Katello: " + tcolor.dflt))
-        break
-    except ValueError:
-        print(f"{tcolor.fl}Invalid input!{tcolor.dflt}")
+if len(kver) == 0:
+    print(f"{tcolor.pmt}What version of Katello are you targeting?")
+    print('')
+    print(f"{tcolor.msg}For a list of supported" +
+          f" versions, browse to:{tcolor.dflt}")
+    print("https://docs.theforeman.org")
+    print('')
+    while True:
+        try:
+            kver = float(input(tcolor.pmt + "Katello: " + tcolor.dflt))
+            break
+        except ValueError:
+            print(f"{tcolor.fl}Invalid input!{tcolor.dflt}")
 
 
 # Setup/install repositories required for installation
@@ -319,11 +336,14 @@ print('')
 print(f"{tcolor.msg}Run {tcolor.dflt}rpm -qa kernel --last{tcolor.msg}" +
       f" to see if a reboot is needed.{tcolor.dflt}")
 
-# Define paramters for Foreman installation
+# Define paramaters for Foreman installation
 print('')
-org = input(tcolor.pmt + "Organization: " + tcolor.dflt)
-loc = input(tcolor.pmt + "Location: " + tcolor.dflt)
-badmun = input(tcolor.pmt + "Admin username: " + tcolor.dflt)
+if len(org) == 0:
+    org = input(tcolor.pmt + "Organization: " + tcolor.dflt)
+if len(loc) == 0:
+    loc = input(tcolor.pmt + "Location: " + tcolor.dflt)
+if len(badmun) == 0:
+    badmun = input(tcolor.pmt + "Admin username: " + tcolor.dflt)
 print('')
 
 # Prompt user to continue with install
@@ -339,6 +359,7 @@ if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
     enable_fw_svc("foreman")
     enable_fw_svc("foreman-proxy")
     fw_reload()
+    print('')
 
     # Had to remove logic for successful installation since Foreman
     # doesn't send a clean exit code (0) after successful install.
@@ -357,20 +378,17 @@ if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
         print("-" * len(log + str("|  |")))
         print('')
         print(f"{tcolor.gen}for detailed installation log.")
-    else:
-        pass
     print('')
     print(f"{tcolor.msg}Installing Foreman and Katello services{tcolor.dflt}")
     katello_install(loc, org, badmun)
     print(f"{tcolor.okb}Foreman installation complete!{tcolor.dflt}")
     log = "/var/log/foreman-installer/katello.log"
-    print(f"{tcolor.gen}See :{tcolor.dflt}")
+    print(f"{tcolor.gen}See the following location for details:{tcolor.dflt}")
     print('')
     print("-" * len(log + str("|  |")))
     print(f"| {log} |")
     print("-" * len(log + str("|  |")))
     print('')
-    print(f"{tcolor.gen}for detailed installation log.")
 elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
     print('')
     print(f"{tcolor.wrn}Host is setup for Foreman installation" +
