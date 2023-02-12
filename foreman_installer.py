@@ -18,6 +18,8 @@ import dns.reversename
 # Define arguements for script
 arg = argparse.ArgumentParser(description="Foreman installer script",
                               formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+arg.add_argument("-a", "--noprompt", action="store_true",
+                 help="Do not prompt to continue/on non-critical errors")
 arg.add_argument("-d", "--discon", action="store_true",
                  help="Disconnected mode")
 arg.add_argument("-f", "--foreman", action="store",
@@ -25,17 +27,18 @@ arg.add_argument("-f", "--foreman", action="store",
 arg.add_argument("-k", "--katello", action="store",
                  help="Katello version", default="")
 arg.add_argument("-o", "--org", action="store",
-                 help="Organization", default="")
+                 help="Organization", default="Default_Organization")
 arg.add_argument("-l", "--loc", action="store", help="Location",
-                 default="")
+                 default="Default_Location")
 arg.add_argument("-u", "--username", action="store",
-                 help="Admin username", default="")
+                 help="Admin username", default="admin")
 arg.add_argument("-t", "--tune", action="store", help="Tuning profile",
                  default="")
 flg = arg.parse_args()
 
 # Define required variables
 disconnected = flg.discon
+npmt = flg.noprompt
 fver = flg.foreman
 kver = flg.katello
 tunp = flg.tune
@@ -137,10 +140,7 @@ def platform_id():
 def resource_check():
     global tunp
     # Validate physical resources meet default tuning spec
-    if cpuc >= 4 and memc >= 20:
-        pass
-    else:
-        # Remember to change from fail to warn once section below is enabled
+    if cpuc < 4 and memc < 20:
         print(f"{tcolor.wrnb}Host does not meet minimum resources spec" +
               f" for the default tuning profile {tcolor.wrn}" +
               "(4 core, 20 GB Memory)")
@@ -148,36 +148,86 @@ def resource_check():
         print(f"{tcolor.msg}For dev deployment, we'll set tuning to " +
               f"{tcolor.dflt}development")
         print('')
-        print(f"{tcolor.pmt}Development deployment?{tcolor.dflt}")
-        uans = str(input("(Y/n): "))
-        if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
-            if memc >= 6:
-                tunp = "development"
+        if npmt:
+            print(f"{tcolor.wrn}Assuming dev deployment...{tcolor.dflt}")
+            tunp = "development"
+            print('')
+        else:
+            print(f"{tcolor.pmt}Is this a development " +
+                  f"deployment?{tcolor.dflt}")
+            uans = str(input("(Y/n): "))
+            if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
+                if memc >= 6:
+                    tunp = "development"
+                    print('')
+                    print(f"{tcolor.okb}Proceeding with install!{tcolor.dflt}")
+                    print('')
+                else:
+                    print('')
+                    print(f"{tcolor.flb}Host does not meet the minimum " +
+                          "resources for the development tuning profile" +
+                          f"{tcolor.fl} (1 core, 6 GB Memory)")
+                    print(f"{tcolor.fl}Exiting!{tcolor.dflt}")
+                    print('')
+                    exit()
+            elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
                 print('')
-                print(f"{tcolor.okb}Proceeding with install!{tcolor.dflt}")
-                print('')
-            else:
-                print('')
-                print(f"{tcolor.flb}Host does not meet the minimum resources" +
-                      " for the development tuning profile" +
-                      f"{tcolor.fl} (1 core, 6 GB Memory)")
-                print(f"{tcolor.fl}Exiting!{tcolor.dflt}")
+                print(f"{tcolor.flb}Host does not meet resource spec!")
+                print(f"{tcolor.fl}Exiting...{tcolor.dflt}")
                 print('')
                 exit()
-        elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
-            print('')
-            print(f"{tcolor.flb}Host does not meet resource spec!")
-            print(f"{tcolor.fl}Exiting...{tcolor.dflt}")
-            print('')
-            exit()
-        else:
-            print('')
-            print(f"{tcolor.fl}Invalid input. Assuming no...")
-            print('')
-            print(f"{tcolor.flb}Host does not meet resource spec!")
-            print(f"{tcolor.fl}Exiting...{tcolor.dflt}")
-            print('')
-            exit()
+            else:
+                print('')
+                print(f"{tcolor.fl}Invalid input. Assuming no...")
+                print('')
+                print(f"{tcolor.flb}Host does not meet resource spec!")
+                print(f"{tcolor.fl}Exiting...{tcolor.dflt}")
+                print('')
+                exit()
+
+
+def foreman_install():
+    global log
+    global loc
+    global org
+    global badmun
+    print(f"{tcolor.okb}Proceeding with Foreman Installation!{tcolor.dflt}")
+    print('')
+
+    print(f"{tcolor.msg}Opening firewall for required services{tcolor.dflt}")
+    enable_fw_svc("foreman")
+    enable_fw_svc("foreman-proxy")
+    fw_reload()
+    print('')
+
+    # Had to remove logic for successful installation since Foreman
+    # doesn't send a clean exit code (0) after successful install.
+    # Will revist once the exit code received for both successful
+    # and failed installations have been identified.
+    if tunp == "development":
+        print(f"{tcolor.msg}Installing Foreman" +
+              f" and Katello services{tcolor.dflt}")
+        katello_install_dev(loc, org, badmun)
+        print(f"{tcolor.okb}Foreman installation complete!{tcolor.dflt}")
+        log = "/var/log/foreman-installer/katello.log"
+        print(f"{tcolor.gen}See :{tcolor.dflt}")
+        print('')
+        print("-" * len(log + str("|  |")))
+        print(f"| {log} |")
+        print("-" * len(log + str("|  |")))
+        print('')
+        print(f"{tcolor.gen}for detailed installation log.")
+    print('')
+    print(f"{tcolor.msg}Installing Foreman and Katello services{tcolor.dflt}")
+    katello_install(loc, org, badmun)
+    print(f"{tcolor.okb}Foreman installation complete!{tcolor.dflt}")
+    log = "/var/log/foreman-installer/katello.log"
+    print(f"{tcolor.gen}See the following location for details:{tcolor.dflt}")
+    print('')
+    print("-" * len(log + str("|  |")))
+    print(f"| {log} |")
+    print("-" * len(log + str("|  |")))
+    print('')
 
 
 clear_screen()
@@ -200,28 +250,29 @@ resource_check()
 # Check if session is "screen"ed or "tmux"ed
 # If not, prompt user to continue at own risk
 ptyv = os.environ['TERM']
-if str(ptyv) == str("screen"):
-    pass
-else:
+if str(ptyv) != str("screen"):
     print(f"{tcolor.wrnb}Session does not appear to be running in" +
           " asynchronous method (i.e screen or tmux)")
     print(f"{tcolor.msg}Foreman installation can be time consuming")
     print("It may not finish before remote session reaches idle timeout.")
     print('')
-    print(f"{tcolor.pmt}Do you wish to proceed?{tcolor.dflt}")
-    uans = str(input("(Y/n): "))
-    if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
-        print('')
+    if npmt:
         print(f"{tcolor.wrn}Proceeding without screen/tmux{tcolor.dflt}")
-    elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
-        print('')
-        print(f"{tcolor.flb}Exiting...{tcolor.dflt}")
-        exit()
     else:
-        print('')
-        print(f"{tcolor.fl}Invalid input. Assuming no...")
-        print(f"{tcolor.flb}Exiting...{tcolor.dflt}")
-        exit()
+        print(f"{tcolor.pmt}Do you wish to proceed?{tcolor.dflt}")
+        uans = str(input("(Y/n): "))
+        if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
+            print('')
+            print(f"{tcolor.wrn}Proceeding without screen/tmux{tcolor.dflt}")
+        elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
+            print('')
+            print(f"{tcolor.flb}Exiting...{tcolor.dflt}")
+            exit()
+        else:
+            print('')
+            print(f"{tcolor.fl}Invalid input. Assuming no...")
+            print(f"{tcolor.flb}Exiting...{tcolor.dflt}")
+            exit()
 
 # Validate reverse DNS record for host (required for install)
 try:
@@ -236,29 +287,32 @@ except dns.resolver.NXDOMAIN:
     print(f"| {ipaddr}    {hname} |")
     print("-" * len(ipaddr + str('    ') + str('|  |') + hname))
     print('')
-    print(f"{tcolor.pmt}Do you wish to continue{tcolor.dflt}")
-    uans = str(input("(Y/n): "))
-    if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
-        print('')
+    if npmt:
         print(f"{tcolor.wrn}Proceeding with install!{tcolor.dflt}")
-        print('')
-    elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
-        print('')
-        print(f"{tcolor.wrn}Submit PTR record in DNS" +
-              " server or configure hosts file with above entry")
-        print('')
-        print(f"{tcolor.fl}Exiting...{tcolor.dflt}")
-        print('')
-        exit()
     else:
-        print('')
-        print(f"{tcolor.fl}Invalid input. Assuming no...")
-        print(f"{tcolor.wrn}Submit PTR record in DNS" +
-              " server or configure hosts file with above entry")
-        print('')
-        print(f"{tcolor.fl}Exiting...{tcolor.dflt}")
-        print('')
-        exit()
+        print(f"{tcolor.pmt}Do you wish to continue{tcolor.dflt}")
+        uans = str(input("(Y/n): "))
+        if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
+            print('')
+            print(f"{tcolor.wrn}Proceeding with install!{tcolor.dflt}")
+            print('')
+        elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
+            print('')
+            print(f"{tcolor.wrn}Submit PTR record in DNS" +
+                  " server or configure hosts file with above entry")
+            print('')
+            print(f"{tcolor.fl}Exiting...{tcolor.dflt}")
+            print('')
+            exit()
+        else:
+            print('')
+            print(f"{tcolor.fl}Invalid input. Assuming no...")
+            print(f"{tcolor.wrn}Submit PTR record in DNS" +
+                  " server or configure hosts file with above entry")
+            print('')
+            print(f"{tcolor.fl}Exiting...{tcolor.dflt}")
+            print('')
+            exit()
 
 if disconnected:
     print(f"{tcolor.flb}Script is not yet setup for disconnected installs")
@@ -267,7 +321,13 @@ if disconnected:
     exit()
 
 # Define Foreman and Katello versions
-if len(fver) == 0:
+if len(fver) == 0 and npmt:
+    print(f"{tcolor.flb}Unable to get Foreman verison interactively!")
+    print(f"{tcolor.fl}Define foreman argument, or allow prompting")
+    print(f"{tcolor.msg}Use -h or --help for assistance{tcolor.dflt}")
+    print('')
+    exit()
+elif len(fver) == 0:
     print(f"{tcolor.pmt}What version of Foreman" +
           " are you targeting?")
     print('')
@@ -282,7 +342,13 @@ if len(fver) == 0:
         except ValueError:
             print(f"{tcolor.fl}Invalid input!{tcolor.dflt}")
 
-if len(kver) == 0:
+if len(kver) == 0 and npmt:
+    print(f"{tcolor.flb}Unable to get Katello verison interactively!")
+    print(f"{tcolor.fl}Define Katello argument, or allow prompting")
+    print(f"{tcolor.msg}Use -h or --help for assistance{tcolor.dflt}")
+    print('')
+    exit()
+elif len(kver) == 0:
     print(f"{tcolor.pmt}What version of Katello are you targeting?")
     print('')
     print(f"{tcolor.msg}For a list of supported" +
@@ -348,70 +414,37 @@ print('')
 
 # Prompt user to continue with install
 print(f"{tcolor.msg}Host is ready for Foreman Installation.")
-print(f"{tcolor.pmt}Would you like to proceed?{tcolor.dflt}")
-uans = str(input("(Y/n): "))
-if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
-    print('')
-    print(f"{tcolor.okb}Proceeding with Foreman Installation!{tcolor.dflt}")
-    print('')
-
-    print(f"{tcolor.msg}Opening firewall for required services{tcolor.dflt}")
-    enable_fw_svc("foreman")
-    enable_fw_svc("foreman-proxy")
-    fw_reload()
-    print('')
-
-    # Had to remove logic for successful installation since Foreman
-    # doesn't send a clean exit code (0) after successful install.
-    # Will revist once the exit code received for both successful
-    # and failed installations have been identified.
-    if tunp == "development":
-        print(f"{tcolor.msg}Installing Foreman" +
-              f" and Katello services{tcolor.dflt}")
-        katello_install_dev(loc, org, badmun)
-        print(f"{tcolor.okb}Foreman installation complete!{tcolor.dflt}")
-        log = "/var/log/foreman-installer/katello.log"
-        print(f"{tcolor.gen}See :{tcolor.dflt}")
-        print('')
-        print("-" * len(log + str("|  |")))
-        print(f"| {log} |")
-        print("-" * len(log + str("|  |")))
-        print('')
-        print(f"{tcolor.gen}for detailed installation log.")
-    print('')
-    print(f"{tcolor.msg}Installing Foreman and Katello services{tcolor.dflt}")
-    katello_install(loc, org, badmun)
-    print(f"{tcolor.okb}Foreman installation complete!{tcolor.dflt}")
-    log = "/var/log/foreman-installer/katello.log"
-    print(f"{tcolor.gen}See the following location for details:{tcolor.dflt}")
-    print('')
-    print("-" * len(log + str("|  |")))
-    print(f"| {log} |")
-    print("-" * len(log + str("|  |")))
-    print('')
-elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
-    print('')
-    print(f"{tcolor.wrn}Host is setup for Foreman installation" +
-          f" but foreman has {tcolor.fl}NOT{tcolor.wrn} been installed.")
-    print('')
-    print(f"{tcolor.msg}Execute the following to complete installation:")
-    print(f"{tcolor.dflt}firewall-cmd " +
-          "--add-service={foreman,foreman-proxy}")
-    print("firewall-cmd --runtime-to-permanent")
-    print("foreman-installer --scenario katello \\")
-    print(f" --foreman-initial-location={org} \\")
-    print(f" --foreman-initial-organization={loc} \\")
-    print(f" --foreman-initial-admin-username={badmun}")
-    print(f'{tcolor.dflt}')
+if npmt:
+    foreman_install()
 else:
-    print('')
-    print(f"{tcolor.fl}Invalid input. Assuming no...")
-    print(f"{tcolor.wrn}Host is setup for Foreman installation" +
-          f" but foreman has {tcolor.fl}NOT{tcolor.wrn} been installed.")
-    print('')
-    print(f"{tcolor.msg}Execute the following to complete installation:")
-    print(f"{tcolor.dflt}foreman-installer --scenario katello \\")
-    print(f" --foreman-initial-location={org} \\")
-    print(f" --foreman-initial-organization={loc} \\")
-    print(f" --foreman-initial-admin-username={badmun}")
-    print('')
+    print(f"{tcolor.pmt}Would you like to proceed?{tcolor.dflt}")
+    uans = str(input("(Y/n): "))
+    if str.lower(uans) == str("y") or str.lower(uans) == ("yes"):
+        print('')
+        foreman_install()
+    elif str.lower(uans) == str("n") or str.lower(uans) == ("no"):
+        print('')
+        print(f"{tcolor.wrn}Host is setup for Foreman installation" +
+              f" but foreman has {tcolor.fl}NOT{tcolor.wrn} been installed.")
+        print('')
+        print(f"{tcolor.msg}Execute the following to complete installation:")
+        print(f"{tcolor.dflt}firewall-cmd " +
+              "--add-service={foreman,foreman-proxy}")
+        print("firewall-cmd --runtime-to-permanent")
+        print("foreman-installer --scenario katello \\")
+        print(f" --foreman-initial-location={org} \\")
+        print(f" --foreman-initial-organization={loc} \\")
+        print(f" --foreman-initial-admin-username={badmun}")
+        print(f'{tcolor.dflt}')
+    else:
+        print('')
+        print(f"{tcolor.fl}Invalid input. Assuming no...")
+        print(f"{tcolor.wrn}Host is setup for Foreman installation" +
+              f" but foreman has {tcolor.fl}NOT{tcolor.wrn} been installed.")
+        print('')
+        print(f"{tcolor.msg}Execute the following to complete installation:")
+        print(f"{tcolor.dflt}foreman-installer --scenario katello \\")
+        print(f" --foreman-initial-location={org} \\")
+        print(f" --foreman-initial-organization={loc} \\")
+        print(f" --foreman-initial-admin-username={badmun}")
+        print('')
