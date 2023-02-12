@@ -253,7 +253,7 @@ if str(ptyv) != str("screen"):
     print('')
     if npmt:
         print(f"{tcolor.wrn}Proceeding without screen/tmux{tcolor.dflt}")
-            print('')
+        print('')
     else:
         print(f"{tcolor.pmt}Do you wish to proceed?{tcolor.dflt}")
         uans = str(input("(Y/n): "))
