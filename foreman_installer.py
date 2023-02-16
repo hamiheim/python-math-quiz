@@ -123,6 +123,17 @@ def foreman_compute(crpack):
     subprocess.run(["sudo", "foreman-maintain", "packages", "install", crpack])
 
 
+def vmw_cr_setup(crun, crpw, srvr, dc):
+    subprocess.run(["sudo", "hammer", "compute-resource", "create",
+                    "--provider", "vmware", "--name", "VMware CR", "--user",
+                    crun, "--password", crpw, "--server", srvr, "--datacenter",
+                    dc])
+
+
+# Section for setup of external auth source (i.e. IdM)
+# def ext_auth_source():
+
+
 # Check platform ID
 def platform_id():
     # Get host release info
@@ -460,6 +471,13 @@ if len(crpack) > 0:
     print(f"{tcolor.msg}Installing {crpack} compute resource" +
           " package{tcolor.dflt}")
     foreman_compute()
+    if crpack == str("vmware"):
+        vmw_cr_setup()
+
+# Section for running auth source setup
+# if len(<arg>) > 0
+#   print(f"{tcolor.msg}Setting up Authentication Source{tcolor.dflt}")
+#   ext_auth_source()
 
 # Future plans
 # - Add ability to specify additional plugins to enable
