@@ -37,6 +37,9 @@ arg.add_argument("-t", "--tune", action="store",
                  default="default")
 arg.add_argument("-u", "--username", action="store",
                  help="Admin username", default="admin")
+arg.add_argument("-c", "--compute-resource", dest="compute_resource",
+                 action="store", help="Compute Resource type", default="")
+
 flg = arg.parse_args()
 
 # Define required variables
@@ -48,6 +51,7 @@ tunp = flg.tune
 org = flg.org
 loc = flg.loc
 badmun = flg.username
+crpack = flg.compute_resource
 
 
 # Define terminal color output variables using ANSII codes
@@ -113,6 +117,10 @@ def katello_install(loc, org, badmun, tunp):
                     "--foreman-initial-location", loc,
                     "--foreman-initial-organization", org,
                     "--foreman-initial-admin-username", badmun])
+
+
+def foreman_compute(crpack):
+    subprocess.run(["sudo", "foreman-maintain", "packages", "install", crpack])
 
 
 # Check platform ID
@@ -447,6 +455,11 @@ else:
         print(f" --foreman-initial-organization={loc} \\")
         print(f" --foreman-initial-admin-username={badmun}")
         print('')
+
+if len(crpack) > 0:
+    print(f"{tcolor.msg}Installing {crpack} compute resource" +
+          " package{tcolor.dflt}")
+    foreman_compute()
 
 # Future plans
 # - Add ability to specify additional plugins to enable
