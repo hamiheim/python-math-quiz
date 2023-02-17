@@ -37,10 +37,47 @@ arg.add_argument("-t", "--tune", action="store",
                  default="default")
 arg.add_argument("-u", "--username", action="store",
                  help="Admin username", default="admin")
+
 arg.add_argument("-c", "--compute-resource", dest="compute_resource",
-                 action="store", help="Compute Resource type", default="")
+                 action="store", help="Compute Resource type")
+
+# Virtualization --> Installer argument
+# Amazon EC2 --> --enable-foreman-compute-ec2
+# Google Compute Engine --> --enable-foreman-compute-gce
+# Libvirt --> --enable-foreman-compute-libvirt
+# openstack --> --enable-foreman-compute-openstack
+# oVirt / RHV --> --enable-foreman-compute-ovirt
+# VMware --> t u--enable-foreman-compute-vmware
+
+arg.add_argument("--cr-username", dest="cr_username", action="store",
+                 help="Compute Resource username")
+
+arg.add_argument("--cr-password", dest="cr_password", action="store",
+                 help="Compute Resource password")
+
+arg.add_argument("--cr-server", dest="cr_server", action="store",
+                 help="Compute Resource server")
+
+arg.add_argument("--cr-datacenter", dest="cr_datacenter", action="store",
+                 help="Compute Resource Datacenter")
 
 flg = arg.parse_args()
+
+if flg.cr_username and not flg.compute_resource:
+    arg.error("--cr-username requires --compute-resource")
+
+if flg.cr_password and not flg.compute_resource:
+    arg.error("--cr-password requires --compute-resource")
+
+if flg.cr_server and not flg.compute_resource:
+    arg.error("--cr-server requires --compute-resource")
+
+if flg.cr_datacenter and not flg.compute_resource:
+    arg.error("--cr-dataceneter requires --compute-resource")
+
+if flg.compute_resource and not flg.cr_username or not flg.cr_password or not flg.cr_server or not flg.cr_datacenter:
+    arg.error("--compute-resource requires --cr-username," +
+              " --cr-password, --cr-server, and --cr-datacenter")
 
 # Define required variables
 disconnected = flg.discon
