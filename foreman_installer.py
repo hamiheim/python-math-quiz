@@ -16,7 +16,7 @@ import subprocess
 import dns.resolver
 import dns.reversename
 
-# Define arguements for script
+# Define arguments for script
 arg = argparse.ArgumentParser(description="Foreman installer script",
                               formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 arg.add_argument("-a", "--noprompt", action="store_true",
@@ -39,45 +39,37 @@ arg.add_argument("-u", "--username", action="store",
                  help="Admin username", default="admin")
 
 arg.add_argument("-c", "--compute-resource", dest="compute_resource",
-                 action="store", help="Compute Resource type")
+                 action="store", help="Compute Resource type; " +
+                 "Acceptable options include: " +
+                 "vmware, ec2, gce, openstack, ovirt, and libvirt ")
 
-# Virtualization --> Installer argument
-# Amazon EC2 --> --enable-foreman-compute-ec2
-# Google Compute Engine --> --enable-foreman-compute-gce
-# Libvirt --> --enable-foreman-compute-libvirt
-# openstack --> --enable-foreman-compute-openstack
-# oVirt / RHV --> --enable-foreman-compute-ovirt
-# VMware --> t u--enable-foreman-compute-vmware
+# Provide arguments to setup Compute Resources; still working on this
+# arg.add_argument("--cr-username", dest="cr_username", action="store",
+#                 help="Compute Resource username")
 
-arg.add_argument("--cr-username", dest="cr_username", action="store",
-                 help="Compute Resource username")
+# arg.add_argument("--cr-password", dest="cr_password", action="store",
+#                 help="Compute Resource password")
 
-arg.add_argument("--cr-password", dest="cr_password", action="store",
-                 help="Compute Resource password")
+# arg.add_argument("--cr-server", dest="cr_server", action="store",
+#                 help="Compute Resource server")
 
-arg.add_argument("--cr-server", dest="cr_server", action="store",
-                 help="Compute Resource server")
-
-arg.add_argument("--cr-datacenter", dest="cr_datacenter", action="store",
-                 help="Compute Resource Datacenter")
+# arg.add_argument("--cr-datacenter", dest="cr_datacenter", action="store",
+#                 help="Compute Resource Datacenter")
 
 flg = arg.parse_args()
 
-if flg.cr_username and not flg.compute_resource:
-    arg.error("--cr-username requires --compute-resource")
+# Enforce inclusive arguments; still working through installation pieces
+# if flg.cr_username and not flg.compute_resource:
+#    arg.error("--cr-username requires --compute-resource")
 
-if flg.cr_password and not flg.compute_resource:
-    arg.error("--cr-password requires --compute-resource")
+# if flg.cr_password and not flg.compute_resource:
+#    arg.error("--cr-password requires --compute-resource")
 
-if flg.cr_server and not flg.compute_resource:
-    arg.error("--cr-server requires --compute-resource")
+# if flg.cr_server and not flg.compute_resource:
+#    arg.error("--cr-server requires --compute-resource")
 
-if flg.cr_datacenter and not flg.compute_resource:
-    arg.error("--cr-dataceneter requires --compute-resource")
-
-if flg.compute_resource and not flg.cr_username or not flg.cr_password or not flg.cr_server or not flg.cr_datacenter:
-    arg.error("--compute-resource requires --cr-username," +
-              " --cr-password, --cr-server, and --cr-datacenter")
+# if flg.cr_datacenter and not flg.compute_resource:
+#    arg.error("--cr-dataceneter requires --compute-resource")
 
 # Define required variables
 disconnected = flg.discon
@@ -88,7 +80,7 @@ tunp = flg.tune
 org = flg.org
 loc = flg.loc
 badmun = flg.username
-crpack = flg.compute_resource
+cr = flg.compute_resource
 
 
 # Define terminal color output variables using ANSII codes
@@ -104,6 +96,24 @@ class tcolor:
     gen = '\033[0;35m'
     dflt = '\033[0m'
 
+
+if len(cr) > 0:
+    if str(cr) == str("vmware"):
+        crpack = "--enable-foreman-compute-vmware"
+    elif str(cr) == str("ec2"):
+        crpack = "--enable-foreman-compute-ec2"
+    elif str(cr) == str("libvirt"):
+        crpack = "--enable-foreman-compute-libvirt"
+    elif str(cr) == str("gce"):
+        crpack = "--enable-foreman-compute-gce"
+    elif str(cr) == str("openstack"):
+        crpack = "--enable-foreman-compute-openstack"
+    elif str(cr) == str("ovirt"):
+        crpack = "--enable-foreman-compute-ovirt"
+    else:
+        print(f"{tcolor.wrnb}Compute resource invalid!")
+        print(f"{tcolor.msg}Use foreman-installer.py -h for valid options")
+        print(f"{tcolor.wrn}Exiting!{tcolor.dflt}")
 
 # Define hostname and IP Address
 hname = socket.gethostname()
@@ -156,8 +166,12 @@ def katello_install(loc, org, badmun, tunp):
                     "--foreman-initial-admin-username", badmun])
 
 
-def foreman_compute(crpack):
-    subprocess.run(["sudo", "foreman-maintain", "packages", "install", crpack])
+def katello_install_w_compute(loc, org, badmun, tunp, crpack):
+    subprocess.run(["sudo", "foreman-installer", "--scenario", "katello",
+                    "--tuning", tunp,
+                    "--foreman-initial-location", loc,
+                    "--foreman-initial-organization", org,
+                    "--foreman-initial-admin-username", badmun, crpack])
 
 
 def vmw_cr_setup(crun, crpw, srvr, dc):
@@ -256,6 +270,7 @@ def foreman_install():
     global org
     global badmun
     global tunp
+    global crpack
     print(f"{tcolor.okb}Proceeding with Foreman Installation!{tcolor.dflt}")
     print('')
 
@@ -270,7 +285,12 @@ def foreman_install():
     # Will revist once the exit code received for both successful
     # and failed installations have been identified.
     print(f"{tcolor.msg}Installing Foreman and Katello services{tcolor.dflt}")
-    katello_install(loc, org, badmun, tunp)
+    if cr:
+        print('')
+        katello_install_w_compute(loc, org, badmun, tunp, crpack)
+    else:
+        print('')
+        katello_install(loc, org, badmun, tunp)
     print(f"{tcolor.okb}Foreman installation complete!{tcolor.dflt}")
     log = "/var/log/foreman-installer/katello.log"
     print(f"{tcolor.gen}See the following location for details:{tcolor.dflt}")
@@ -479,15 +499,29 @@ else:
         print(f"{tcolor.wrn}Host is setup for Foreman installation" +
               f" but foreman has {tcolor.fl}NOT{tcolor.wrn} been installed.")
         print('')
-        print(f"{tcolor.msg}Execute the following to complete installation:")
-        print(f"{tcolor.dflt}firewall-cmd " +
-              "--add-service={foreman,foreman-proxy}")
-        print("firewall-cmd --runtime-to-permanent")
-        print("foreman-installer --scenario katello \\")
-        print(f" --foreman-initial-location={org} \\")
-        print(f" --foreman-initial-organization={loc} \\")
-        print(f" --foreman-initial-admin-username={badmun}")
-        print(f'{tcolor.dflt}')
+        if len(cr) > 0:
+            print(f"{tcolor.msg}Execute the following to " +
+                  "complete installation:")
+            print(f"{tcolor.dflt}firewall-cmd " +
+                  "--add-service={foreman,foreman-proxy}")
+            print("firewall-cmd --runtime-to-permanent")
+            print("foreman-installer --scenario katello \\")
+            print(f" --foreman-initial-location={org} \\")
+            print(f" --foreman-initial-organization={loc} \\")
+            print(f" --foreman-initial-admin-username={badmun}")
+            print(f"{crpack}")
+            print(f'{tcolor.dflt}')
+        else:
+            print(f"{tcolor.msg}Execute the following to " +
+                  "complete installation:")
+            print(f"{tcolor.dflt}firewall-cmd " +
+                  "--add-service={foreman,foreman-proxy}")
+            print("firewall-cmd --runtime-to-permanent")
+            print("foreman-installer --scenario katello \\")
+            print(f" --foreman-initial-location={org} \\")
+            print(f" --foreman-initial-organization={loc} \\")
+            print(f" --foreman-initial-admin-username={badmun}")
+            print(f'{tcolor.dflt}')
     else:
         print('')
         print(f"{tcolor.fl}Invalid input. Assuming no...")
@@ -495,21 +529,30 @@ else:
               f" but foreman has {tcolor.fl}NOT{tcolor.wrn} been installed.")
         print('')
         print(f"{tcolor.msg}Execute the following to complete installation:")
-        print(f"{tcolor.dflt}firewall-cmd " +
-              "--add-service={foreman,foreman-proxy}")
-        print("firewall-cmd --runtime-to-permanent")
-        print(f"{tcolor.dflt}foreman-installer --scenario katello \\")
-        print(f" --foreman-initial-location={org} \\")
-        print(f" --foreman-initial-organization={loc} \\")
-        print(f" --foreman-initial-admin-username={badmun}")
-        print('')
+        if len(cr) > 0:
+            print(f"{tcolor.msg}Execute the following to " +
+                  "complete installation:")
+            print(f"{tcolor.dflt}firewall-cmd " +
+                  "--add-service={foreman,foreman-proxy}")
+            print("firewall-cmd --runtime-to-permanent")
+            print("foreman-installer --scenario katello \\")
+            print(f" --foreman-initial-location={org} \\")
+            print(f" --foreman-initial-organization={loc} \\")
+            print(f" --foreman-initial-admin-username={badmun}")
+            print(f"{crpack}")
+            print(f'{tcolor.dflt}')
+        else:
+            print(f"{tcolor.msg}Execute the following to " +
+                  "complete installation:")
+            print(f"{tcolor.dflt}firewall-cmd " +
+                  "--add-service={foreman,foreman-proxy}")
+            print("firewall-cmd --runtime-to-permanent")
+            print("foreman-installer --scenario katello \\")
+            print(f" --foreman-initial-location={org} \\")
+            print(f" --foreman-initial-organization={loc} \\")
+            print(f" --foreman-initial-admin-username={badmun}")
+            print(f'{tcolor.dflt}')
 
-if len(crpack) > 0:
-    print(f"{tcolor.msg}Installing {crpack} compute resource" +
-          " package{tcolor.dflt}")
-    foreman_compute()
-    if crpack == str("vmware"):
-        vmw_cr_setup()
 
 # Section for running auth source setup
 # if len(<arg>) > 0
