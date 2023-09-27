@@ -9,13 +9,13 @@ A quiz that generates a set number of randomly generated questions that features
 Allows the user to select from a set number of questions (25, 50, or 100). There is a hidden option for 5 used for testing that can be commented out. Depending on the exam type, the selected number of questions will be generated using a randomly generated set of numbers. At the conclusion of the quiz, it will present the user with the number of correct vs. incorrect questions answered, as well as prompt the user if they'd like to view the questions they got wrong.
 
 #### Addition
-Questions use randomly generated numbers ranging between 0 and 50.
+Questions use randomly generated numbers ranging between 0 and 999.
 
 #### Subtraction
-Questions use randomly generated numbers ranging between 0 and 50.
+Questions use randomly generated numbers ranging between 0 and 999.
 
 #### Multiplication
-Questions use randomly generated numbers ranging between 1 and 12.
+Questions use randomly generated numbers; numerator ranging between 0 and 999 and denominator ranging between 0 and 99.
 
 #### Division
 In order to prevent questions with quotients that result in floating numbers, a set of numerators and denominators have been generated in two lists for each product family from 2 through 12. The two lists align to allow for a question with a whole number for the quotient. For example, for the 12 product family, there is a numerator list `nume12` and a denominators list `denom12`. `nume12` has values of exact products of 12, starting at 12, through 144; `denom12` has values of the corresponding product of the value from the `nume12` list, starting at 1, through 12. Questions use a randomly selected index from a randomly selected list.
