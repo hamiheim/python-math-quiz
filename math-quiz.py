@@ -40,8 +40,8 @@ except FileNotFoundError:
 def addition():
     global ques
     clear_screen()
-    num1 = randint(0, 50)
-    num2 = randint(0, 50)
+    num1 = randint(0, 999)
+    num2 = randint(0, 999)
     prob = str(num1) + "+" + str(num2)
     q.append(prob)
     print(f"{ques}/{rnds}) {num1} + {num2}")
@@ -74,8 +74,8 @@ def addition():
 def multiplication():
     global ques
     clear_screen()
-    num1 = randint(0, 12)
-    num2 = randint(0, 12)
+    num1 = randint(0, 999)
+    num2 = randint(0, 99)
     prob = str(num1) + "*" + str(num2)
     q.append(prob)
     print(f"{ques}/{rnds}) {num1} * {num2}")
@@ -108,8 +108,8 @@ def multiplication():
 def subtraction():
     global ques
     clear_screen()
-    num1 = randint(0, 50)
-    num2 = randint(0, 50)
+    num1 = randint(0, 999)
+    num2 = randint(0, 999)
     # Prevent negative differences)
     if int(num1) < int(num2):
         prob = str(num2) + "-" + str(num1)
@@ -348,12 +348,11 @@ while True:
         continue
 while True:
     try:
-        oper = int(input("""What kind of test would you like; 1) Addition, 2)
-        Multiplication, 3) Subtraction, 4) Division,
-                   or 5) Mixed? """))
+        oper = int(input('What kind of test would you like; 1) Addition, '
+                        '2) Multiplication, 3) Subtraction, 4) Division,'
+                        'or 5) Mixed? '))
         if oper == int(1):
-            print(f"""Your addition quiz will consist of
-            {rnds} questions. Good luck!""")
+            print(f"Your addition quiz will consist of {rnds} questions. Good luck!")
             sleep(2)
             start = time()
             for z in range(int(rnds)):
@@ -361,8 +360,7 @@ while True:
             end = time()
             break
         elif oper == int(2):
-            print(f"""Your multiplication quiz will consist of
-            {rnds} questions. Good luck!""")
+            print(f"Your multiplication quiz will consist of {rnds} questions. Good luck!")
             sleep(2)
             start = time()
             for z in range(int(rnds)):
@@ -370,8 +368,7 @@ while True:
             end = time()
             break
         elif oper == int(3):
-            print(f"""Your subtraction quiz will consist of
-            {rnds} questions. Good luck!""")
+            print(f"Your subtraction quiz will consist of {rnds} questions. Good luck!")
             sleep(2)
             start = time()
             for z in range(int(rnds)):
@@ -379,8 +376,7 @@ while True:
             end = time()
             break
         elif oper == int(4):
-            print(f"""Your division quiz will consist of
-            {rnds} questions. Good luck!""")
+            print(f"Your division quiz will consist of {rnds} questions. Good luck!")
             sleep(2)
             start = time()
             for z in range(int(rnds)):
