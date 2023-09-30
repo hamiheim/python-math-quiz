@@ -344,15 +344,15 @@ def mix10():
 # 5 for testing; this can be commented.
 while True:
     try:
-        rnds = int(input("How many questions; 25, 50, or 100? "))
-        if rnds == 25 or rnds == 50 or rnds == 100 or rnds == 5:
+        rnds = int(input("How many questions; 5, 10, 25, 50, or 100? "))
+        if rnds == 5 or rnds == 10 or rnds == 25 or rnds == 50 or rnds == 100 or rnds == 5:
             print()
             break
         else:
-            print("INVALID INPUT! Please enter 25, 50, or 100")
+            print("INVALID INPUT! Please enter 5, 10, 25, 50, or 100")
             continue
     except ValueError:
-        print("INVALID INPUT! Please enter 25, 50, or 100")
+        print("INVALID INPUT! Please enter 5, 10, 25, 50, or 100")
         continue
 while True:
     try:
