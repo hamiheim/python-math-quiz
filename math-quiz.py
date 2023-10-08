@@ -40,7 +40,6 @@ except FileNotFoundError:
 def addition():
     global ques
     clear_screen()
-<<<<<<< HEAD
     num1 = randint(0, 999)
     num2 = randint(0, 999)
     prob = str(num1) + "+" + str(num2)
@@ -48,13 +47,6 @@ def addition():
     print(f"<{ques}/{rnds}>")
     print(f"{num1 : >5}")
     print(f"+ {num2 : >3}")
-=======
-    num1 = randint(0, 50)
-    num2 = randint(0, 50)
-    prob = str(num1) + "+" + str(num2)
-    q.append(prob)
-    print(f"{ques}/{rnds}) {num1} + {num2}")
->>>>>>> main
     a.append(num1 + num2)
     ans = num1 + num2
     while True:
@@ -84,7 +76,6 @@ def addition():
 def multiplication():
     global ques
     clear_screen()
-<<<<<<< HEAD
     num1 = randint(0, 999)
     num2 = randint(0, 99)
     prob = str(num1) + "*" + str(num2)
@@ -92,13 +83,6 @@ def multiplication():
     print(f"<{ques}/{rnds}>") 
     print(f"{num1 : >5}")
     print(f"* {num2 : >3}")
-=======
-    num1 = randint(0, 12)
-    num2 = randint(0, 12)
-    prob = str(num1) + "*" + str(num2)
-    q.append(prob)
-    print(f"{ques}/{rnds}) {num1} * {num2}")
->>>>>>> main
     a.append(num1 * num2)
     ans = num1 * num2
     while True:
@@ -128,36 +112,23 @@ def multiplication():
 def subtraction():
     global ques
     clear_screen()
-<<<<<<< HEAD
     num1 = randint(0, 999)
     num2 = randint(0, 999)
-=======
-    num1 = randint(0, 50)
-    num2 = randint(0, 50)
->>>>>>> main
     # Prevent negative differences)
     if int(num1) < int(num2):
         prob = str(num2) + "-" + str(num1)
         q.append(prob)
-<<<<<<< HEAD
         print(f"<{ques}/{rnds}>")
         print(f"{num2 : >5}")
         print(f"- {num1 : >3}")
-=======
-        print(f"{ques}/{rnds}) {num2} - {num1}")
->>>>>>> main
         a.append(num2 - num1)
         ans = num2 - num1
     else:
         prob = str(num1) + "-" + str(num2)
         q.append(prob)
-<<<<<<< HEAD
         print(f"<{ques}/{rnds}>")
         print(f"{num1 : >5}")
         print(f"- {num2 : >3}")
-=======
-        print(f"{ques}) {num1} - {num2}")
->>>>>>> main
         a.append(num1 - num2)
         ans = num1 - num2
     while True:
@@ -344,7 +315,6 @@ def mix10():
 # 5 for testing; this can be commented.
 while True:
     try:
-<<<<<<< HEAD
         rnds = int(input("How many questions; 5, 10, 25, 50, or 100? "))
         if rnds == 5 or rnds == 10 or rnds == 25 or rnds == 50 or rnds == 100:
             print()
@@ -363,26 +333,6 @@ while True:
         if oper == int(1):
             print(f'Your addition quiz will consist of {rnds} '
                    'questions. Good luck!')
-=======
-        rnds = int(input("How many questions; 25, 50, or 100? "))
-        if rnds == 25 or rnds == 50 or rnds == 100 or rnds == 5:
-            print()
-            break
-        else:
-            print("INVALID INPUT! Please enter 25, 50, or 100")
-            continue
-    except ValueError:
-        print("INVALID INPUT! Please enter 25, 50, or 100")
-        continue
-while True:
-    try:
-        oper = int(input("""What kind of test would you like; 1) Addition, 2)
-        Multiplication, 3) Subtraction, 4) Division,
-                   or 5) Mixed? """))
-        if oper == int(1):
-            print(f"""Your addition quiz will consist of
-            {rnds} questions. Good luck!""")
->>>>>>> main
             sleep(2)
             start = time()
             for z in range(int(rnds)):
@@ -390,13 +340,8 @@ while True:
             end = time()
             break
         elif oper == int(2):
-<<<<<<< HEAD
             print(f'Your multiplication quiz will consist of {rnds} '
                    'questions. Good luck!')
-=======
-            print(f"""Your multiplication quiz will consist of
-            {rnds} questions. Good luck!""")
->>>>>>> main
             sleep(2)
             start = time()
             for z in range(int(rnds)):
@@ -404,13 +349,8 @@ while True:
             end = time()
             break
         elif oper == int(3):
-<<<<<<< HEAD
             print(f'Your subtraction quiz will consist of {rnds} '
                    'questions. Good luck!')
-=======
-            print(f"""Your subtraction quiz will consist of
-            {rnds} questions. Good luck!""")
->>>>>>> main
             sleep(2)
             start = time()
             for z in range(int(rnds)):
@@ -418,13 +358,8 @@ while True:
             end = time()
             break
         elif oper == int(4):
-<<<<<<< HEAD
             print(f'Your division quiz will consist of {rnds} '
                    'questions. Good luck!')
-=======
-            print(f"""Your division quiz will consist of
-            {rnds} questions. Good luck!""")
->>>>>>> main
             sleep(2)
             start = time()
             for z in range(int(rnds)):
@@ -435,15 +370,9 @@ while True:
             print("What type of mix operation do you want to test on?")
             mix = input("Select range of operators; i.e. 1,2 or 2,3,4 ")
             if mix == ('1,2'):
-<<<<<<< HEAD
                 print(f'Your mix operation quiz will consist of '
                 'Addition and Multiplication with '
                 f'{rnds} questions. Good luck!')
-=======
-                print(f"""Your mix operation quiz will consist of
-                Addition and Multiplication with
-                {rnds} questions. Good luck!""")
->>>>>>> main
                 sleep(2)
                 start = time()
                 for z in range(int(rnds)):
@@ -451,15 +380,9 @@ while True:
                 end = time()
                 break
             elif mix == ('1,3'):
-<<<<<<< HEAD
                 print(f'Your mix operation quiz will consist of '
                 f'{rnds} Addition and Subtraction questions. '
                 'Good luck!')
-=======
-                print(f"""Your mix operation quiz will consist of
-                Addition and Subtraction with
-                {rnds} questions. Good luck!""")
->>>>>>> main
                 sleep(2)
                 start = time()
                 for z in range(int(rnds)):
@@ -467,15 +390,9 @@ while True:
                 end = time()
                 break
             elif mix == ('1,4'):
-<<<<<<< HEAD
                 print(f'Your mix operation quiz will consist of '
                 'Addition and Division with '
                 f'{rnds} questions. Good luck!')
-=======
-                print(f"""Your mix operation quiz will consist of
-                      Addition and Division with
-                      {rnds} questions. Good luck!""")
->>>>>>> main
                 sleep(2)
                 start = time()
                 for z in range(int(rnds)):
@@ -483,15 +400,9 @@ while True:
                 end = time()
                 break
             elif mix == ('2,4'):
-<<<<<<< HEAD
                 print(f'Your mix operation quiz will consist of '
                 'Multiplication and Divsion with '
                 f'{rnds} questions. Good luck!')
-=======
-                print(f"""Your mix operation quiz will consist of
-                      Multiplication and Divsion with
-                      {rnds} questions. Good luck!""")
->>>>>>> main
                 sleep(2)
                 start = time()
                 for z in range(int(rnds)):
@@ -499,15 +410,9 @@ while True:
                 end = time()
                 break
             elif mix == ('2,3'):
-<<<<<<< HEAD
                 print(f'Your mix operation quiz will consist of '
                 'Multiplication and Subtraction with '
                 f'{rnds} questions. Good luck!')
-=======
-                print(f"""Your mix operation quiz will consist of
-                Multiplication and Subtraction with
-                {rnds} questions. Good luck!""")
->>>>>>> main
                 sleep(2)
                 start = time()
                 for z in range(int(rnds)):
@@ -515,15 +420,9 @@ while True:
                 end = time()
                 break
             elif mix == ('3,4'):
-<<<<<<< HEAD
                 print(f'Your mix operation quiz will consist of '
                 'Subtraction and Division with '
                 f'{rnds} questions. Good luck!')
-=======
-                print(f"""Your mix operation quiz will consist of
-                Subtraction and Division with
-                {rnds} questions. Good luck!""")
->>>>>>> main
                 sleep(2)
                 start = time()
                 for z in range(int(rnds)):
@@ -531,15 +430,9 @@ while True:
                 end = time()
                 break
             elif mix == ('1,2,3'):
-<<<<<<< HEAD
                 print(f'Your mix operation quiz will consist of '
                 'Addition, Multiplication, and Subtraction with '
                 f'{rnds} questions. Good luck!')
-=======
-                print(f"""Your mix operation quiz will consist of
-                Addition, Multiplication, and Subtraction with
-                {rnds} questions. Good luck!""")
->>>>>>> main
                 sleep(2)
                 start = time()
                 for z in range(int(rnds)):
@@ -547,15 +440,9 @@ while True:
                 end = time()
                 break
             elif mix == ('1,2,4'):
-<<<<<<< HEAD
                 print(f'Your mix operation quiz will consist of '
                 'Addition, Multiplication, and Division with '
                 f'{rnds} questions. Good luck!')
-=======
-                print(f"""Your mix operation quiz will consist of
-                Addition, Multiplication, and Division with
-                {rnds} questions. Good luck!""")
->>>>>>> main
                 sleep(2)
                 start = time()
                 for z in range(int(rnds)):
@@ -563,15 +450,9 @@ while True:
                 end = time()
                 break
             elif mix == ('1,3,4'):
-<<<<<<< HEAD
                 print(f'Your mix operation quiz will consist of '
                 'Addition, Subtraction, and Divsion with '
                 f'{rnds} questions. Good luck!')
-=======
-                print(f"""Your mix operation quiz will consist of
-                Addition, Subtraction, and Divsion with
-                {rnds} questions. Good luck!""")
->>>>>>> main
                 sleep(2)
                 start = time()
                 for z in range(int(rnds)):
@@ -579,15 +460,9 @@ while True:
                 end = time()
                 break
             elif mix == ('2,3,4'):
-<<<<<<< HEAD
                 print(f'Your mix operation quiz will consist of '
                 'Multiplication, Subtraction, and Divsion with '
                 f'{rnds} questions. Good luck!')
-=======
-                print(f"""Your mix operation quiz will consist of
-                Multiplication, Subtraction, and Divsion with
-                {rnds} questions. Good luck!""")
->>>>>>> main
                 sleep(2)
                 start = time()
                 for z in range(int(rnds)):
@@ -595,14 +470,8 @@ while True:
                 end = time()
                 break
             elif mix == ('1,2,3,4'):
-<<<<<<< HEAD
                 print(f'Your mix operation quiz will consist of all '
                 f'operators with {rnds} questions. Good luck!')
-=======
-                print(f"""Your mix operation quiz will consist of
-                all operators with
-                {rnds} questions. Good luck!""")
->>>>>>> main
                 sleep(2)
                 start = time()
                 for z in range(int(rnds)):
@@ -610,14 +479,8 @@ while True:
                 end = time()
                 break
             elif not mix:
-<<<<<<< HEAD
                 print(f'Unkown Input... Defaulting to all operators!'
                 f'Your mix operation quiz will consist of {rnds} questions. Good luck!')
-=======
-                print(f"""Defaulting to all operators!
-                      \nYour mix operation quiz will consist of
-                      {rnds} questions. Good luck!""")
->>>>>>> main
                 sleep(2)
                 start = time()
                 for z in range(int(rnds)):
@@ -678,12 +541,7 @@ print(f"You answered {cor} correctly!")
 print(f"You answered {incor} incorrectly!")
 if len(q) > 0:  # check if any questions were incorrect
     while True:
-<<<<<<< HEAD
         rep = input("\nWould you like to see what questions you got wrong? ").lower()
-=======
-        rep = input("""\nWould you like to see
-                    what questions you got wrong? """).lower()
->>>>>>> main
         if rep == 'y' or rep == 'yes':
             print("Incorrect questions: ")
             print(q)
