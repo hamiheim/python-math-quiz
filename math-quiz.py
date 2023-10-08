@@ -114,7 +114,7 @@ def subtraction():
     clear_screen()
     num1 = randint(0, 999)
     num2 = randint(0, 999)
-    # Prevent negative differences)
+    # Prevent negative differences
     if int(num1) < int(num2):
         prob = str(num2) + "-" + str(num1)
         q.append(prob)
@@ -566,7 +566,108 @@ if int(score) > int(hscore):
     hscore = ohscore.read()
     ohscore.close()
     popup = "## NEW HIGH SCORE! ##"
-    print("")
+    clear_screen()
+    print("#" * len(popup))
+    print("#        ~~~        #\n#",
+    "      (   )       #\n#",
+    "       ---        #\n#",
+    "        |         #\n#",
+    "       /|\        #\n#",
+    "      / | \       #\n#",
+    "       | |        #\n#",
+    "       | |        #\n#",
+    "       | |        #")
+    print("#" * len(popup))
+    sleep(.25)
+    clear_screen()
+    print("#" * len(popup))
+    print("#        ~~~        #\n#",
+    "      (   )       #\n#",
+    "       ---        #\n#",
+    "     \  |  /      #\n#",
+    "      \ | /       #\n#",
+    "        |         #\n#",
+    "       / \        #\n#",
+    "      /   \       #\n#",
+    "     /     \      #")
+    print("#" * len(popup))
+    sleep(.25)
+    clear_screen()
+    print("#" * len(popup))
+    print("#        ~~~        #\n#",
+    "      (   )       #\n#",
+    "       ---        #\n#",
+    "        |         #\n#",
+    "       /|\        #\n#",
+    "      / | \       #\n#",
+    "       | |        #\n#",
+    "       | |        #\n#",
+    "       | |        #")
+    print("#" * len(popup))
+    sleep(.25)
+    clear_screen()
+    print("#" * len(popup))
+    print("#        ~~~        #\n#",
+    "      (   )       #\n#",
+    "       ---        #\n#",
+    "     \  |  /      #\n#",
+    "      \ | /       #\n#",
+    "        |         #\n#",
+    "       / \        #\n#",
+    "      /   \       #\n#",
+    "     /     \      #")
+    print("#" * len(popup))
+    sleep(.25)
+    clear_screen()
+    print("#" * len(popup))
+    print("#        ~~~        #\n#",
+    "      (   )       #\n#",
+    "       ---        #\n#",
+    "        |         #\n#",
+    "       /|\        #\n#",
+    "      / | \       #\n#",
+    "       | |        #\n#",
+    "       | |        #\n#",
+    "       | |        #")
+    print("#" * len(popup))
+    sleep(.25)
+    clear_screen()
+    print("#" * len(popup))
+    print("#        ~~~        #\n#",
+    "      (   )       #\n#",
+    "       ---        #\n#",
+    "     \  |  /      #\n#",
+    "      \ | /       #\n#",
+    "        |         #\n#",
+    "       / \        #\n#",
+    "      /   \       #\n#",
+    "     /     \      #")
+    print("#" * len(popup))
+    sleep(.25)
+    clear_screen()
+    print("#" * len(popup))
+    print("#        ~~~        #\n#",
+    "      (   )       #\n#",
+    "       ---        #\n#",
+    "        |         #\n#",
+    "       /|\        #\n#",
+    "      / | \       #\n#",
+    "       | |        #\n#",
+    "       | |        #\n#",
+    "       | |        #")
+    print("#" * len(popup))
+    sleep(.25)
+    clear_screen()
+    print("#" * len(popup))
+    print("#        ~~~        #\n#",
+    "      (   )       #\n#",
+    "       ---        #\n#",
+    "     \  |  /      #\n#",
+    "      \ | /       #\n#",
+    "        |         #\n#",
+    "       / \        #\n#",
+    "      /   \       #\n#",
+    "     /     \      #")
     print("#" * len(popup))
     print(popup)
     print("#" * len(popup))
@@ -576,3 +677,4 @@ print(f"Your total time was {m} minutes {s} seconds")
 print(f"Your grade is {perc}%")
 print(f"Your score is: {score}")
 print(f"Your high score is: {hscore}")
+print("")
