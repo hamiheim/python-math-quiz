@@ -190,77 +190,48 @@ def subtraction():
 # Define division function
 def division():
     global ques
-    # Define list of indexes to use for elementary division
-    nume12 = [144, 132, 120, 108, 96, 84, 72, 60, 48, 36, 24, 12]
-    nume11 = [121, 110, 99, 88, 77, 66, 55, 44, 33, 22, 11]
-    nume10 = [100, 90, 80, 70, 60, 50, 40, 30, 20, 10]
-    nume9 = [81, 72, 63, 54, 45, 36, 27, 18, 9]
-    nume8 = [64, 56, 48, 40, 32, 24, 16, 8]
-    nume7 = [49, 42, 35, 28, 21, 14, 7]
-    nume6 = [36, 30, 24, 18, 12, 6]
-    nume5 = [25, 20, 15, 10, 5]
-    nume4 = [16, 12, 8, 4]
-    nume3 = [9, 6, 3]
-    nume2 = [4, 2]
-    denum12 = [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
-    denum11 = [11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
-    denum10 = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
-    denum9 = [9, 8, 7, 6, 5, 4, 3, 2, 1]
-    denum8 = [8, 7, 6, 5, 4, 3, 2, 1]
-    denum7 = [7, 6, 5, 4, 3, 2, 1]
-    denum6 = [6, 5, 4, 3, 2, 1]
-    denum5 = [5, 4, 3, 2, 1]
-    denum4 = [4, 3, 2, 1]
-    denum3 = [3, 2, 1]
-    denum2 = [2, 1]
     clear_screen()
-    quotient = randint(2, 12)
-    if quotient == 12:
-        indint = randint(0, 11)
-    elif quotient == 11:
-        indint = randint(0, 10)
-    elif quotient == 10:
-        indint = randint(0, 9)
-    elif quotient == 9:
-        indint = randint(0, 8)
-    elif quotient == 8:
-        indint = randint(0, 7)
-    elif quotient == 7:
-        indint = randint(0, 6)
-    elif quotient == 6:
-        indint = randint(0, 5)
-    elif quotient == 5:
-        indint = randint(0, 4)
-    elif quotient == 4:
-        indint = randint(0, 3)
-    elif quotient == 3:
-        indint = randint(0, 2)
-    elif quotient == 2:
-        indint = randint(0, 1)
-    num1 = locals()[f"nume{quotient}"][indint]
-    num2 = locals()[f"denum{quotient}"][indint]
-    ans = num1/num2
-    prob = str(num1) + "/" + str(num2)
-    q.append(prob)
-    print(f"{ques}/{rnds}) {num1} / {num2}")
-    a.append(int(ans))
+    num1 = randint(2, 9999)
+    num2 = randint(2, 12)
+    if int(num1) < int(num2):
+        ans = num2//num1
+        ansr = num2%num1
+        prob = str(num2) + "/" + str(num1)
+        q.append(prob)
+        print("Answers should be submitted by quotient <enter> followed by remainder. "
+              "If no remainder, simply enter 0.")
+        print(f"{ques}/{rnds}) {num2} / {num1}")
+        a1 = str(str(ans) + " R:" + str(ansr))
+        a.append(a1)
+    else:
+        ans = num1//num2
+        ansr = num1%num2
+        prob = str(num1) + "/" + str(num2)
+        q.append(prob)
+        print("Answers should be submitted by quotient <enter> followed by remainder. "
+              "If no remainder, simply enter 0.")
+        print(f"{ques}/{rnds}) {num1} / {num2}")
+        a1 = str(str(ans) + " R:" + str(ansr))
+        a.append(a1)
     while True:
         try:
             uans = int(input("> "))
-            ua.append(uans)
+            uansr = int(input("> R:"))
+            ua1 = str(str(uans) + " R:" + str(uansr))
+            ua.append(ua1)
             break
         except ValueError:
             print("Please enter a number")
             continue
-    if int(ans) == int(uans):
+    if int(ans) == int(uans) and int(ansr) == int(uansr):
         global cor
         cor = cor + 1
         ques = ques + 1
         global score
         score = score + 10
         q.remove(prob)
-        a.remove(num1 / num2)
-        ua.remove(uans)
+        a.remove(a1)
+        ua.remove(ua1)
     else:
         global incor
         incor = incor + 1
@@ -375,7 +346,7 @@ while True:
     try:
 <<<<<<< HEAD
         rnds = int(input("How many questions; 5, 10, 25, 50, or 100? "))
-        if rnds == 5 or rnds == 10 or rnds == 25 or rnds == 50 or rnds == 100 or rnds == 5:
+        if rnds == 5 or rnds == 10 or rnds == 25 or rnds == 50 or rnds == 100:
             print()
             break
         else:
@@ -671,15 +642,17 @@ perc = round((cor/rnds) * 100)
 
 
 def calc_bonus(rnds, atme, perc):
-    if perc < 80:
-        return 0
-    if atme < 5:
-        b = 10
-    elif 5 <= atme < 10:
-        b = 5
-    elif 10 <= atme < 15:
+    if perc == 100:
         b = 2.5
-    elif 15 <= atme:
+    elif perc < 80:
+        return 0
+    if atme < 20:
+        b = 10
+    elif 20 <= atme < 35:
+        b = 7.5
+    elif 35 <= atme < 50:
+        b = 5
+    elif 50 <= atme:
         return 0
     return (rnds * b)
 
